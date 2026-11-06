@@ -9,7 +9,8 @@
     "render:hello": "remotion render HelloStudio out/hello-studio.mp4",
     "still:hello": "remotion still HelloStudio out/hello-studio.png --frame=45",
     "upgrade": "remotion upgrade",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "render:stories": "for id in Reel1-AIForYourLife Reel2-SaveMoney Reel3-SideHustle Reel4-FamilyFinances Reel5-NoTechSkills; do remotion render $id renders/ai-summit-stories/$id.mp4 --crf=18; done"
   },
   "dependencies": {
     "@remotion/cli": "4.0.538",
