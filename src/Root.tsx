@@ -2,6 +2,11 @@ import { Composition, Folder } from "remotion";
 import { HelloStudio, helloStudioSchemaDefaults } from "./compositions/HelloStudio";
 import { REEL } from "./reels/brand";
 import { reels } from "./reels/Reels";
+import { makeReel } from "./pound/Reel";
+import { poundReels } from "./pound/reels";
+import { TOTAL } from "./pound/theme";
+
+const poundComps = poundReels.map((d) => ({ id: d.id, component: makeReel(d) }));
 
 // Register every video in the studio here. Each <Composition> becomes
 // selectable in `npm run dev` and renderable via `npx remotion render <id>`.
@@ -28,6 +33,11 @@ export const RemotionRoot: React.FC = () => {
             width={REEL.width}
             height={REEL.height}
           />
+        ))}
+      </Folder>
+      <Folder name="AI-Pound-Shorts">
+        {poundComps.map((r) => (
+          <Composition key={r.id} id={r.id} component={r.component} durationInFrames={TOTAL} fps={30} width={1080} height={1920} />
         ))}
       </Folder>
     </>
