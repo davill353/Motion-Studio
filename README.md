@@ -46,6 +46,17 @@ Five vertical 1080×1920 Instagram Story reels live in `src/reels/` (rendered co
 - Text stays within Instagram's story safe zone (clear of the top profile bar and bottom reply bar).
 - Re-render all five with `npm run render:stories`.
 
+## The AI Pound: TikTok / YouTube Shorts
+
+Nine 60-second vertical (1080×1920) explainer reels, one or two per n8n workflow. They live in `src/pound/`:
+
+- `theme.ts` sets the brand colours, logo, call-to-action text and safe zones. Edit it to rebrand all nine reels.
+- `reels.ts` holds the script for every reel: hooks, chats, workflow diagrams and captions. Change wording here.
+- `Flow.tsx` draws the animated workflow diagram, `Chat.tsx` the phone chat mockup, and `ui.tsx` the shared scenes.
+- The logo and workflow screenshots are in `public/pound/`.
+
+Render all nine with `./render-shorts.sh`. The output goes to `renders/ai-pound-shorts/`, together with `VOICEOVER-SCRIPTS.md`, which gives timestamps for recording your voiceover.
+
 ## Adding a new video
 
 1. Create a component in `src/compositions/`, using `useCurrentFrame()` and `interpolate()` / `spring()` to animate.
