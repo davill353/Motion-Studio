@@ -1,0 +1,1475 @@
+{
+  "name": "The AI Pound: Social Publisher (YouTube, Instagram, Facebook, TikTok)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 15
+            }
+          ]
+        }
+      },
+      "id": "45262921-233d-50f1-9aa7-92bd57b79518",
+      "name": "Every 15 minutes",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// ====== EDIT THESE ======\nreturn [{ json: {\n  githubOwner: 'davill353',\n  githubRepo: 'Motion-Studio',\n  githubBranch: 'claude/jolly-tesla-g7il83', // branch the videos live on (change to 'main' once merged)\n  telegramChatId: 'PASTE_YOUR_TELEGRAM_CHAT_ID',\n  facebookPageId: 'PASTE_FACEBOOK_PAGE_ID',\n  instagramUserId: 'PASTE_INSTAGRAM_BUSINESS_ACCOUNT_ID',\n  graphVersion: 'v21.0',\n  youtubePrivacy: 'private',       // 'private' for testing, then 'public'\n  youtubeCategoryId: '28',         // 28 = Science & Technology, 27 = Education\n  tiktokMode: 'inbox',             // 'inbox' = draft in your TikTok inbox; 'direct' = publish (needs TikTok audit)\n  tiktokPrivacy: 'SELF_ONLY',      // used in direct mode; 'PUBLIC_TO_EVERYONE' after audit\n  timezone: 'Europe/London',\n}}];"
+      },
+      "id": "379836d4-7690-5c0a-bfc2-a57fbc18875a",
+      "name": "Settings",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        220,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "read",
+        "documentId": {
+          "__rl": true,
+          "mode": "url",
+          "value": "PASTE_GOOGLE_SHEET_URL"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Calendar"
+        },
+        "options": {}
+      },
+      "id": "fde67bee-8e59-5500-948f-8cb581aa7a87",
+      "name": "Read content calendar",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        440,
+        300
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const tz = $('Settings').first().json.timezone;\nconst now = DateTime.now().setZone(tz);\nconst due = $input.all().map(i => i.json)\n  .filter(r => String(r.status || '').trim().toLowerCase() === 'ready')\n  .map(r => ({ ...r, _when: DateTime.fromFormat(String(r.publish_at || '').trim(), 'yyyy-MM-dd HH:mm', { zone: tz }) }))\n  .filter(r => r._when.isValid && r._when <= now)\n  .sort((a, b) => a._when - b._when);\nif (!due.length) return [];            // nothing due: stop quietly\nconst { _when, ...post } = due[0];      // one post per run keeps things safe and simple\nreturn [{ json: post }];"
+      },
+      "id": "d681e42c-6538-5745-8229-8d280c16282a",
+      "name": "Pick next due post",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        660,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Mirrors brand.md section 6. Blocks the post if anything fails.\nconst p = $input.first().json;\nconst caps = {\n  youtube_title: p.title, caption_youtube: p.caption_youtube, caption_instagram: p.caption_instagram,\n  caption_facebook: p.caption_facebook, caption_tiktok: p.caption_tiktok,\n};\nconst issues = [];\nfor (const [k, v] of Object.entries(caps)) if (!String(v || '').trim()) issues.push(`${k} is empty`);\nif (!String(p.video_path || '').trim()) issues.push('video_path is empty');\nconst all = Object.values(caps).join(' \\n ');\nconst banned = [\n  [/guarantee/i, 'guaranteed results'],\n  [/\\b(cure|cures|cured)\\b/i, 'medical claim (\"cure\")'],\n  [/miracle/i, 'hype claim (\"miracle\")'],\n  [/lose\\s+\\d+\\s*(stone|st|lbs?|kg|pounds)/i, 'specific weight-loss amount'],\n  [/semaglutide|tirzepatide|ozempic|wegovy|mounjaro|saxenda|liraglutide|botox|botulinum|finasteride/i, 'prescription-only medicine'],\n  [/(skinny|weight[- ]?loss|fat)\\s*(jab|pen|injection)|\\bthe jab\\b/i, 'implied prescription-only medicine'],\n  [/\\[(add|link|todo|result)\\]|\\bTODO\\b/i, 'unfilled placeholder'],\n];\nfor (const [re, why] of banned) if (re.test(all)) issues.push(`Blocked phrase: ${why}`);\nif (String(p.is_demo || '').trim().toLowerCase().startsWith('y')) {\n  for (const k of ['caption_youtube', 'caption_instagram', 'caption_facebook', 'caption_tiktok'])\n    if (!/demo/i.test(String(p[k] || ''))) issues.push(`${k} must say it's a demo`);\n}\nif (String(p.title || '').length > 100) issues.push('YouTube title is over 100 characters');\nfor (const k of ['caption_instagram', 'caption_tiktok']) if (String(p[k] || '').length > 2200) issues.push(`${k} is over 2200 characters`);\nreturn [{ json: { ...p, compliance_ok: issues.length === 0, issues } }];"
+      },
+      "id": "9a7657f6-8fc8-5d9e-9af0-39061c0019cc",
+      "name": "Compliance check",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        880,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c1",
+              "leftValue": "={{ $json.compliance_ok }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "f6b0bce1-bc40-5c98-a5d9-54253b6cc8ea",
+      "name": "Passes compliance?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1100,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const p = $input.first().json;\nreturn [{ json: { post_id: p.post_id, status: 'blocked', notes: p.issues.join('; ') } }];"
+      },
+      "id": "f3e7c09e-4656-5481-92da-67de65ca1e25",
+      "name": "Mark blocked",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1320,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "mode": "url",
+          "value": "PASTE_GOOGLE_SHEET_URL"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Calendar"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "post_id"
+          ],
+          "schema": []
+        },
+        "options": {}
+      },
+      "id": "cb6e431e-60d1-5f12-9172-779785d4c95d",
+      "name": "Sheet: mark blocked",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1540,
+        560
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Settings').first().json.telegramChatId }}",
+        "text": "=⛔ Post {{ $('Mark blocked').first().json.post_id }} was NOT published.\n\nCompliance issues:\n{{ $('Mark blocked').first().json.notes }}\n\nFix the row in the sheet and set status back to ready.",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "de449974-f893-5641-9aed-df70c9c91eda",
+      "name": "Telegram: blocked",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1760,
+        560
+      ],
+      "credentials": {
+        "telegramApi": {
+          "id": "",
+          "name": "Telegram bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "chatId": "={{ $('Settings').first().json.telegramChatId }}",
+        "message": "=📣 Ready to post: {{ $json.title }}\n\n🎬 {{ $json.video_path }}\n🏷 Demo: {{ $json.is_demo }}\n\n▶️ YouTube: {{ $json.caption_youtube }}\n\n📸 Instagram: {{ $json.caption_instagram }}\n\n👍 Facebook: {{ $json.caption_facebook }}\n\n🎵 TikTok: {{ $json.caption_tiktok }}",
+        "responseType": "approval",
+        "approvalOptions": {
+          "values": {
+            "approvalType": "double",
+            "approveLabel": "Post it",
+            "disapproveLabel": "Not now"
+          }
+        },
+        "options": {
+          "limitWaitTime": {
+            "values": {
+              "limitType": "afterTimeInterval",
+              "resumeAmount": 12,
+              "resumeUnit": "hours"
+            }
+          }
+        }
+      },
+      "id": "8598f06c-ae42-5168-b28c-fa624e56ea15",
+      "name": "Ask for approval",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1320,
+        200
+      ],
+      "credentials": {
+        "telegramApi": {
+          "id": "",
+          "name": "Telegram bot"
+        }
+      },
+      "webhookId": "4e61f6dc-28cc-5550-b871-fe506e58b48d"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c2",
+              "leftValue": "={{ $json.data?.approved === true }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "d92e2b82-07e4-532d-9ab5-436a3230c39f",
+      "name": "Approved?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1540,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const p = $('Compliance check').first().json;\nreturn [{ json: { post_id: p.post_id, status: 'declined', notes: 'Declined (or no answer) in Telegram' } }];"
+      },
+      "id": "054c28b3-d241-522e-ba87-6622216f782b",
+      "name": "Mark declined",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1760,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "mode": "url",
+          "value": "PASTE_GOOGLE_SHEET_URL"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Calendar"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "post_id"
+          ],
+          "schema": []
+        },
+        "options": {}
+      },
+      "id": "4155853a-0211-5c64-bea5-07bc85ae2e6b",
+      "name": "Sheet: mark declined",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1980,
+        400
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://api.github.com/repos/{{ $('Settings').first().json.githubOwner }}/{{ $('Settings').first().json.githubRepo }}/contents/{{ $('Compliance check').first().json.video_path }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file",
+              "outputPropertyName": "video"
+            }
+          }
+        },
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "ref",
+              "value": "={{ $('Settings').first().json.githubBranch }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/vnd.github.raw"
+            }
+          ]
+        }
+      },
+      "id": "17365c76-7265-5e8e-9efb-d913ee1f0347",
+      "name": "Download video from GitHub",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1760,
+        200
+      ],
+      "credentials": {
+        "githubApi": {
+          "id": "",
+          "name": "GitHub account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const post = $('Compliance check').first().json;\nconst bin = $input.first().binary.video;\nbin.mimeType = 'video/mp4';\nbin.fileName = (post.video_path.split('/').pop() || 'video.mp4');\nconst size = (await this.helpers.getBinaryDataBuffer(0, 'video')).length;\nif (size > 64 * 1024 * 1024) throw new Error('Video is over 64 MB; TikTok single-chunk upload needs <= 64 MB.');\nreturn [{ json: { ...post, size }, binary: { video: bin } }];"
+      },
+      "id": "ef4701f8-58fb-574a-bc64-acd1ef50916c",
+      "name": "Prepare video",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1980,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "video",
+        "operation": "upload",
+        "title": "={{ $('Prepare video').first().json.title }}",
+        "regionCode": "GB",
+        "categoryId": "={{ $('Settings').first().json.youtubeCategoryId }}",
+        "binaryProperty": "video",
+        "options": {
+          "description": "={{ $('Prepare video').first().json.caption_youtube }}",
+          "privacyStatus": "={{ $('Settings').first().json.youtubePrivacy }}",
+          "selfDeclaredMadeForKids": false,
+          "tags": "={{ $('Prepare video').first().json.tags || '' }}"
+        }
+      },
+      "id": "4e39b4e1-3eb8-5069-8d32-0b59e9aa05a0",
+      "name": "YouTube: upload Short",
+      "type": "n8n-nodes-base.youTube",
+      "typeVersion": 1,
+      "position": [
+        2260,
+        -100
+      ],
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "",
+          "name": "YouTube account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const j = $input.first().json;\nconst id = j.id || j.uploadId;\nreturn [{ json: id ? { platform: 'youtube', ok: true, url: `https://youtube.com/shorts/${id}` }\n                   : { platform: 'youtube', ok: false, error: JSON.stringify(j.error || j).slice(0, 300) } }];"
+      },
+      "id": "91b43a2b-d469-528c-a233-576b88badeed",
+      "name": "YouTube result",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2480,
+        -100
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph-video.facebook.com/{{ $('Settings').first().json.graphVersion }}/{{ $('Settings').first().json.facebookPageId }}/videos",
+        "options": {},
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "source",
+              "inputDataFieldName": "video"
+            },
+            {
+              "name": "description",
+              "value": "={{ $('Prepare video').first().json.caption_facebook }}"
+            },
+            {
+              "name": "title",
+              "value": "={{ $('Prepare video').first().json.title }}"
+            }
+          ]
+        }
+      },
+      "id": "2b5243be-6f5b-57e8-88ab-1dfe2a90ea51",
+      "name": "Facebook: upload video",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2260,
+        100
+      ],
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "",
+          "name": "Meta Page token (query)"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const j = $input.first().json;\nconst page = $('Settings').first().json.facebookPageId;\nreturn [{ json: j.id ? { platform: 'facebook', ok: true, url: `https://www.facebook.com/${page}/videos/${j.id}` }\n                     : { platform: 'facebook', ok: false, error: JSON.stringify(j.error || j).slice(0, 300) } }];"
+      },
+      "id": "77e2439f-6893-5ee8-883b-a91d4d9bb21e",
+      "name": "Facebook result",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2480,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/{{ $('Settings').first().json.graphVersion }}/{{ $('Settings').first().json.instagramUserId }}/media",
+        "options": {},
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ media_type: 'REELS', upload_type: 'resumable', share_to_feed: true, caption: $('Prepare video').first().json.caption_instagram }) }}"
+      },
+      "id": "425b0a73-49a4-56a2-a215-4f7edae99b07",
+      "name": "Instagram: create Reel container",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2260,
+        300
+      ],
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "",
+          "name": "Meta Page token (query)"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const j = $input.first().json;\nreturn [{ json: { container_id: j.id, error: j.id ? undefined : (j.error || j) }, binary: $('Prepare video').first().binary }];"
+      },
+      "id": "fe6ad067-7fab-5f81-83af-173faae99257",
+      "name": "Attach video (Instagram)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2480,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://rupload.facebook.com/ig-api-upload/{{ $('Settings').first().json.graphVersion }}/{{ $json.container_id }}",
+        "options": {},
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "offset",
+              "value": "0"
+            },
+            {
+              "name": "file_size",
+              "value": "={{ $('Prepare video').first().json.size }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "binaryData",
+        "inputDataFieldName": "video"
+      },
+      "id": "73a13658-21da-56e8-815a-1752f34c0c13",
+      "name": "Instagram: upload video",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2700,
+        300
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "",
+          "name": "Meta Page token (OAuth header)"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "amount": 30,
+        "unit": "seconds"
+      },
+      "id": "bbf67f51-0f34-5b60-9cfa-f4044d833a8f",
+      "name": "Wait 30 seconds",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2920,
+        300
+      ],
+      "webhookId": "b88ca1a0-846a-5e60-95d5-65adf3826cf2"
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://graph.facebook.com/{{ $('Settings').first().json.graphVersion }}/{{ $('Attach video (Instagram)').first().json.container_id }}",
+        "options": {},
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "fields",
+              "value": "status_code,status"
+            }
+          ]
+        }
+      },
+      "id": "dd0b6192-93fa-5bcb-960a-8400aadd2434",
+      "name": "Instagram: check processing",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3140,
+        300
+      ],
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "",
+          "name": "Meta Page token (query)"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c3",
+              "leftValue": "={{ $json.status_code }}",
+              "rightValue": "FINISHED",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "56424ba8-1f94-55fa-8d57-448e4b2f073a",
+      "name": "Instagram ready?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        3360,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c4",
+              "leftValue": "={{ $json.status_code === 'IN_PROGRESS' && $runIndex < 20 }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "fe365066-c1c1-5d2f-8f40-02720b25fafb",
+      "name": "Keep waiting?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        3580,
+        460
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/{{ $('Settings').first().json.graphVersion }}/{{ $('Settings').first().json.instagramUserId }}/media_publish",
+        "options": {},
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "creation_id",
+              "value": "={{ $('Attach video (Instagram)').first().json.container_id }}"
+            }
+          ]
+        }
+      },
+      "id": "a64784c8-15cf-576a-871b-379113481c43",
+      "name": "Instagram: publish",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3580,
+        200
+      ],
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "",
+          "name": "Meta Page token (query)"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://graph.facebook.com/{{ $('Settings').first().json.graphVersion }}/{{ $json.id }}",
+        "options": {},
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "fields",
+              "value": "permalink"
+            }
+          ]
+        }
+      },
+      "id": "5424268d-24b8-5b7d-b0ea-c72f36d4528c",
+      "name": "Instagram: get link",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3800,
+        200
+      ],
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "",
+          "name": "Meta Page token (query)"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const j = $input.first().json;\nreturn [{ json: j.permalink ? { platform: 'instagram', ok: true, url: j.permalink }\n  : { platform: 'instagram', ok: false, error: JSON.stringify(j.error || j.status || j).slice(0, 300) } }];"
+      },
+      "id": "9f7421c4-3c0d-59a4-8700-74bdbfd437eb",
+      "name": "Instagram result",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4020,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://open.tiktokapis.com/v2/oauth/token/",
+        "options": {},
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpCustomAuth",
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "grant_type",
+              "value": "refresh_token"
+            }
+          ]
+        }
+      },
+      "id": "5eaac263-c716-5bae-bb2a-7713ed4c0c9e",
+      "name": "TikTok: refresh access token",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2260,
+        560
+      ],
+      "credentials": {
+        "httpCustomAuth": {
+          "id": "",
+          "name": "TikTok app secrets"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://open.tiktokapis.com/v2/post/publish/{{ $('Settings').first().json.tiktokMode === 'direct' ? '' : 'inbox/' }}video/init/",
+        "options": {},
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $json.access_token }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify(Object.assign({ source_info: { source: 'FILE_UPLOAD', video_size: $('Prepare video').first().json.size, chunk_size: $('Prepare video').first().json.size, total_chunk_count: 1 } }, $('Settings').first().json.tiktokMode === 'direct' ? { post_info: { title: $('Prepare video').first().json.caption_tiktok, privacy_level: $('Settings').first().json.tiktokPrivacy, disable_comment: false, disable_duet: false, disable_stitch: false } } : {})) }}"
+      },
+      "id": "7d7163c0-b32b-5ebd-9426-5ce78d8fdb77",
+      "name": "TikTok: start upload",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2480,
+        560
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const j = $input.first().json;\nreturn [{ json: { upload_url: j.data?.upload_url, publish_id: j.data?.publish_id, error: j.data?.upload_url ? undefined : (j.error || j) },\n          binary: $('Prepare video').first().binary }];"
+      },
+      "id": "1ccf059c-79de-5f79-88d0-ffe95ec2c20f",
+      "name": "Attach video (TikTok)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2700,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "={{ $json.upload_url }}",
+        "options": {},
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "video/mp4"
+            },
+            {
+              "name": "Content-Range",
+              "value": "=bytes 0-{{ $('Prepare video').first().json.size - 1 }}/{{ $('Prepare video').first().json.size }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "binaryData",
+        "inputDataFieldName": "video"
+      },
+      "id": "703cff84-0ed5-504d-b7b0-bd9b9f120ebb",
+      "name": "TikTok: upload video",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2920,
+        560
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const a = $('Attach video (TikTok)').first().json;\nconst j = $input.first().json;\nconst mode = $('Settings').first().json.tiktokMode;\nconst ok = !!a.publish_id && !j.error;\nreturn [{ json: ok ? { platform: 'tiktok', ok: true, url: mode === 'direct' ? `published (id ${a.publish_id})` : 'sent to your TikTok inbox as a draft' }\n                   : { platform: 'tiktok', ok: false, error: JSON.stringify(a.error || j.error || j).slice(0, 300) } }];"
+      },
+      "id": "159b0f78-4e27-5528-b063-57083792473a",
+      "name": "TikTok result",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3140,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "numberInputs": 4
+      },
+      "id": "9d77a365-53b1-545e-9f36-50392acf5e79",
+      "name": "Collect results",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        4240,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const post = $('Compliance check').first().json;\nconst r = Object.fromEntries($input.all().map(i => [i.json.platform, i.json]));\nconst fmt = p => r[p] ? (r[p].ok ? r[p].url : `FAILED: ${r[p].error}`) : 'no result';\nconst allOk = ['youtube', 'facebook', 'instagram', 'tiktok'].every(p => r[p]?.ok);\nconst tz = $('Settings').first().json.timezone;\nconst tiktokDraft = $('Settings').first().json.tiktokMode !== 'direct';\nconst row = {\n  post_id: post.post_id,\n  status: allOk ? 'posted' : 'partly posted',\n  youtube_url: fmt('youtube'), instagram_url: fmt('instagram'), facebook_url: fmt('facebook'), tiktok_status: fmt('tiktok'),\n  posted_at: DateTime.now().setZone(tz).toFormat('yyyy-MM-dd HH:mm'),\n};\nconst text = [\n  `${allOk ? '✅' : '⚠️'} ${post.title}`, '',\n  `▶️ YouTube: ${row.youtube_url}`, `📸 Instagram: ${row.instagram_url}`,\n  `👍 Facebook: ${row.facebook_url}`, `🎵 TikTok: ${row.tiktok_status}`,\n  ...(tiktokDraft && r.tiktok?.ok ? ['', 'Open TikTok → inbox → finish the post. Caption to paste:', post.caption_tiktok] : []),\n].join('\\n');\nreturn [{ json: { ...row, _summary: text } }];"
+      },
+      "id": "6bd81745-c41e-53ed-a3a2-c5e8d870e45f",
+      "name": "Build summary",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4460,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const { _summary, ...row } = $input.first().json;\nreturn [{ json: row }];"
+      },
+      "id": "818583c9-9318-5106-a254-effd34771fdb",
+      "name": "Row for sheet",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4680,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "mode": "url",
+          "value": "PASTE_GOOGLE_SHEET_URL"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Calendar"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "post_id"
+          ],
+          "schema": []
+        },
+        "options": {}
+      },
+      "id": "e481ffdc-5628-54db-95a7-22b0009307e4",
+      "name": "Sheet: save links",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        4900,
+        200
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Settings').first().json.telegramChatId }}",
+        "text": "={{ $('Build summary').first().json._summary }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "46cf0e84-f292-50ad-9faa-bb14b98fccb4",
+      "name": "Telegram: posted summary",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        5120,
+        200
+      ],
+      "credentials": {
+        "telegramApi": {
+          "id": "",
+          "name": "Telegram bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## 1. Settings: edit your IDs here first",
+        "height": 120,
+        "width": 420
+      },
+      "id": "a74b0b6f-42a8-5f63-ad46-10bcf0ace7f5",
+      "name": "Note 1",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        140,
+        120
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## 2. Compliance gate (brand.md §6), then Telegram approval",
+        "height": 120,
+        "width": 420
+      },
+      "id": "4991e227-8d09-5c7f-bda2-ead20e695591",
+      "name": "Note 2",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        880,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## 3. Posts to all four platforms in parallel; a failure on one doesn't stop the others",
+        "height": 120,
+        "width": 420
+      },
+      "id": "84c6cc3a-f5e1-5d29-98b7-e69d0d253fbb",
+      "name": "Note 3",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2260,
+        -260
+      ]
+    }
+  ],
+  "connections": {
+    "Every 15 minutes": {
+      "main": [
+        [
+          {
+            "node": "Settings",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Settings": {
+      "main": [
+        [
+          {
+            "node": "Read content calendar",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Read content calendar": {
+      "main": [
+        [
+          {
+            "node": "Pick next due post",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Pick next due post": {
+      "main": [
+        [
+          {
+            "node": "Compliance check",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Compliance check": {
+      "main": [
+        [
+          {
+            "node": "Passes compliance?",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Passes compliance?": {
+      "main": [
+        [
+          {
+            "node": "Ask for approval",
+            "index": 0,
+            "type": "main"
+          }
+        ],
+        [
+          {
+            "node": "Mark blocked",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Mark blocked": {
+      "main": [
+        [
+          {
+            "node": "Sheet: mark blocked",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Sheet: mark blocked": {
+      "main": [
+        [
+          {
+            "node": "Telegram: blocked",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Ask for approval": {
+      "main": [
+        [
+          {
+            "node": "Approved?",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Approved?": {
+      "main": [
+        [
+          {
+            "node": "Download video from GitHub",
+            "index": 0,
+            "type": "main"
+          }
+        ],
+        [
+          {
+            "node": "Mark declined",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Mark declined": {
+      "main": [
+        [
+          {
+            "node": "Sheet: mark declined",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Download video from GitHub": {
+      "main": [
+        [
+          {
+            "node": "Prepare video",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Prepare video": {
+      "main": [
+        [
+          {
+            "node": "YouTube: upload Short",
+            "index": 0,
+            "type": "main"
+          },
+          {
+            "node": "Facebook: upload video",
+            "index": 0,
+            "type": "main"
+          },
+          {
+            "node": "Instagram: create Reel container",
+            "index": 0,
+            "type": "main"
+          },
+          {
+            "node": "TikTok: refresh access token",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "YouTube: upload Short": {
+      "main": [
+        [
+          {
+            "node": "YouTube result",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Facebook: upload video": {
+      "main": [
+        [
+          {
+            "node": "Facebook result",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Instagram: create Reel container": {
+      "main": [
+        [
+          {
+            "node": "Attach video (Instagram)",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Attach video (Instagram)": {
+      "main": [
+        [
+          {
+            "node": "Instagram: upload video",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Instagram: upload video": {
+      "main": [
+        [
+          {
+            "node": "Wait 30 seconds",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Wait 30 seconds": {
+      "main": [
+        [
+          {
+            "node": "Instagram: check processing",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Instagram: check processing": {
+      "main": [
+        [
+          {
+            "node": "Instagram ready?",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Instagram ready?": {
+      "main": [
+        [
+          {
+            "node": "Instagram: publish",
+            "index": 0,
+            "type": "main"
+          }
+        ],
+        [
+          {
+            "node": "Keep waiting?",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Keep waiting?": {
+      "main": [
+        [
+          {
+            "node": "Wait 30 seconds",
+            "index": 0,
+            "type": "main"
+          }
+        ],
+        [
+          {
+            "node": "Instagram result",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Instagram: publish": {
+      "main": [
+        [
+          {
+            "node": "Instagram: get link",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Instagram: get link": {
+      "main": [
+        [
+          {
+            "node": "Instagram result",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "TikTok: refresh access token": {
+      "main": [
+        [
+          {
+            "node": "TikTok: start upload",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "TikTok: start upload": {
+      "main": [
+        [
+          {
+            "node": "Attach video (TikTok)",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Attach video (TikTok)": {
+      "main": [
+        [
+          {
+            "node": "TikTok: upload video",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "TikTok: upload video": {
+      "main": [
+        [
+          {
+            "node": "TikTok result",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "YouTube result": {
+      "main": [
+        [
+          {
+            "node": "Collect results",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Facebook result": {
+      "main": [
+        [
+          {
+            "node": "Collect results",
+            "index": 1,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Instagram result": {
+      "main": [
+        [
+          {
+            "node": "Collect results",
+            "index": 2,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "TikTok result": {
+      "main": [
+        [
+          {
+            "node": "Collect results",
+            "index": 3,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Collect results": {
+      "main": [
+        [
+          {
+            "node": "Build summary",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Build summary": {
+      "main": [
+        [
+          {
+            "node": "Row for sheet",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Row for sheet": {
+      "main": [
+        [
+          {
+            "node": "Sheet: save links",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Sheet: save links": {
+      "main": [
+        [
+          {
+            "node": "Telegram: posted summary",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Europe/London"
+  },
+  "pinData": {}
+}
