@@ -5,6 +5,7 @@ import { reels } from "./reels/Reels";
 import { makeReel } from "./pound/Reel";
 import { poundReels } from "./pound/reels";
 import { TOTAL } from "./pound/theme";
+import { CaseStudy01 } from "./casestudy/CaseStudy";
 
 const poundComps = poundReels.map((d) => ({ id: d.id, component: makeReel(d) }));
 
@@ -39,6 +40,10 @@ export const RemotionRoot: React.FC = () => {
         {poundComps.map((r) => (
           <Composition key={r.id} id={r.id} component={r.component} durationInFrames={TOTAL} fps={30} width={1080} height={1920} />
         ))}
+      </Folder>
+      <Folder name="Case-Studies">
+        <Composition id="CaseStudy01-Vertical" component={CaseStudy01} durationInFrames={750} fps={30} width={1080} height={1920} />
+        <Composition id="CaseStudy01-Square" component={CaseStudy01} durationInFrames={750} fps={30} width={1080} height={1080} />
       </Folder>
     </>
   );
