@@ -154,9 +154,10 @@ Case study posts live in `posts/<YYYY-MM-DD>-<slug>/` with captions for Instagra
 
 | Platform | Handle |
 | --- | --- |
-| TikTok | @theaipound |
+| TikTok | @theaipound (bio: “AI + money tips for one-person businesses 🇬🇧”) |
 | Instagram | `[add]` |
 | YouTube | `[add]` |
 | LinkedIn | `[add]` |
+| Link hub | linktr.ee/theaipound |
 | Website | `[add]` |
 | Contact email | `[add]` |
