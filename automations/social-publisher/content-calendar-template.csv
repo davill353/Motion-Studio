@@ -1,0 +1,18 @@
+post_id,publish_at,status,video_path,title,caption_youtube,caption_instagram,caption_facebook,caption_tiktok,tags,is_demo,youtube_url,instagram_url,facebook_url,tiktok_status,posted_at,notes
+cs01,2026-11-10 18:30,draft,renders/case-studies/CaseStudy01-Vertical.mp4,WhatsApp AI assistant that answers pricing questions (n8n demo build) #Shorts,"A WhatsApp assistant that answers customers' pricing questions using the business's own documents. Built in n8n with no code.
+
+How it works: WhatsApp message → AI agent → searches your documents → instant reply.
+
+This is a demo build using sample data, not a live client result.
+
+Follow The AI Pound for practical AI automations for UK small businesses. linktr.ee/theaipound
+
+#AIAutomation #n8n #SmallBusinessUK #Shorts","Case study #1: a WhatsApp assistant that answers pricing questions from the business's own documents.
+
+Customers ask the same ""how much is…?"" questions all day. This assistant reads the business's price documents and replies on WhatsApp straight away, built in n8n with no code.
+
+Demo build with sample data, so no client results yet.
+
+Comment AUTOMATE if you want one for your business.
+
+#AIAutomation #SmallBusinessUK #WhatsAppBusiness #n8n #BuildInPublic","Case study #1 (demo build): a WhatsApp assistant that answers pricing questions from the business's own documents. Built in n8n, no code. Sample data for now; real results to follow. Comment AUTOMATE if you want one for your business.","Case study #1: WhatsApp assistant that answers pricing questions from your own docs 📄 Built overnight in n8n, no code. Demo build, sample data. Comment AUTOMATE and I'll show you how it works. #AIAutomation #n8n #SmallBusinessUK #AIassistant #buildinpublic","AI automation,n8n,WhatsApp,small business UK",yes,,,,,,
