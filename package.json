@@ -1,0 +1,24 @@
+{
+  "name": "motion-studio",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A code-based motion graphics studio powered by Remotion",
+  "scripts": {
+    "dev": "remotion studio",
+    "render": "remotion render",
+    "render:hello": "remotion render HelloStudio out/hello-studio.mp4",
+    "still:hello": "remotion still HelloStudio out/hello-studio.png --frame=45",
+    "upgrade": "remotion upgrade",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.538",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "remotion": "4.0.538"
+  },
+  "devDependencies": {
+    "@types/react": "18.3.12",
+    "typescript": "5.6.3"
+  }
+}
