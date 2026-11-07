@@ -96,14 +96,30 @@ node("Read content calendar", "googleSheets", 4.7, {
 link("Settings", "Read content calendar")
 
 code("Pick next due post", r"""
+// Picks the earliest row with status "ready" whose publish_at time has passed (UK time).
+// Accepts the date formats Google Sheets tends to send back.
 const tz = $('Settings').first().json.timezone;
 const now = DateTime.now().setZone(tz);
-const due = $input.all().map(i => i.json)
+const formats = ['yyyy-MM-dd HH:mm', 'yyyy-MM-dd HH:mm:ss', 'yyyy-MM-dd H:mm', 'dd/MM/yyyy HH:mm', 'dd/MM/yyyy HH:mm:ss',
+  'd/M/yyyy H:mm', 'd/M/yyyy H:mm:ss', 'dd/MM/yyyy', 'd/M/yyyy', 'yyyy-MM-dd'];
+const parseWhen = (v) => {
+  if (typeof v === 'number') return DateTime.fromMillis(Math.round((v - 25569) * 86400000), { zone: 'utc' }).setZone(tz, { keepLocalTime: true });
+  const t = String(v ?? '').trim();
+  if (/^\d+(\.\d+)?$/.test(t)) return parseWhen(Number(t));           // Sheets serial date
+  for (const f of formats) { const d = DateTime.fromFormat(t, f, { zone: tz }); if (d.isValid) return d; }
+  return DateTime.fromISO(t, { zone: tz });
+};
+const rows = $input.all().map(i => i.json);
+const due = rows
   .filter(r => String(r.status || '').trim().toLowerCase() === 'ready')
-  .map(r => ({ ...r, _when: DateTime.fromFormat(String(r.publish_at || '').trim(), 'yyyy-MM-dd HH:mm', { zone: tz }) }))
+  .map(r => ({ ...r, _when: parseWhen(r.publish_at) }))
   .filter(r => r._when.isValid && r._when <= now)
   .sort((a, b) => a._when - b._when);
-if (!due.length) return [];            // nothing due: stop quietly
+if (!due.length) {
+  // Nothing to post. Explain why in the execution log (open this node to read it).
+  console.log('No post due. Rows seen:', rows.map(r => `${r.post_id}: status="${r.status}", publish_at="${r.publish_at}" -> ${parseWhen(r.publish_at).isValid ? parseWhen(r.publish_at).toFormat('yyyy-MM-dd HH:mm') : 'UNREADABLE DATE'}`));
+  return [];
+}
 const { _when, ...post } = due[0];      // one post per run keeps things safe and simple
 return [{ json: post }];
 """, [660, 300])
