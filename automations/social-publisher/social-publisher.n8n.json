@@ -372,7 +372,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const post = $('Compliance check').first().json;\nconst bin = $input.first().binary.video;\nbin.mimeType = 'video/mp4';\nbin.fileName = (post.video_path.split('/').pop() || 'video.mp4');\nconst size = (await this.helpers.getBinaryDataBuffer(0, 'video')).length;\nif (size > 64 * 1024 * 1024) throw new Error('Video is over 64 MB; TikTok single-chunk upload needs <= 64 MB.');\nreturn [{ json: { ...post, size }, binary: { video: bin } }];"
+        "jsCode": "// Re-saves the downloaded file as a proper MP4 (GitHub labels it application/vnd.github.raw,\n// and n8n keeps that label in its stored copy, which YouTube rejects).\nconst post = $('Compliance check').first().json;\nconst buffer = await this.helpers.getBinaryDataBuffer(0, 'video');\nconst size = buffer.length;\nif (size > 64 * 1024 * 1024) throw new Error('Video is over 64 MB; TikTok single-chunk upload needs <= 64 MB.');\nconst fileName = post.video_path.split('/').pop() || 'video.mp4';\nconst video = await this.helpers.prepareBinaryData(buffer, fileName, 'video/mp4');\nreturn [{ json: { ...post, size }, binary: { video } }];"
       },
       "id": "ef4701f8-58fb-574a-bc64-acd1ef50916c",
       "name": "Prepare video",

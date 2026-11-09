@@ -218,13 +218,15 @@ http("Download video from GitHub", [1760, 200], "GET",
 link("Approved?", "Download video from GitHub", out=0)
 
 code("Prepare video", r"""
+// Re-saves the downloaded file as a proper MP4 (GitHub labels it application/vnd.github.raw,
+// and n8n keeps that label in its stored copy, which YouTube rejects).
 const post = $('Compliance check').first().json;
-const bin = $input.first().binary.video;
-bin.mimeType = 'video/mp4';
-bin.fileName = (post.video_path.split('/').pop() || 'video.mp4');
-const size = (await this.helpers.getBinaryDataBuffer(0, 'video')).length;
+const buffer = await this.helpers.getBinaryDataBuffer(0, 'video');
+const size = buffer.length;
 if (size > 64 * 1024 * 1024) throw new Error('Video is over 64 MB; TikTok single-chunk upload needs <= 64 MB.');
-return [{ json: { ...post, size }, binary: { video: bin } }];
+const fileName = post.video_path.split('/').pop() || 'video.mp4';
+const video = await this.helpers.prepareBinaryData(buffer, fileName, 'video/mp4');
+return [{ json: { ...post, size }, binary: { video } }];
 """, [1980, 200])
 link("Download video from GitHub", "Prepare video")
 
