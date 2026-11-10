@@ -180,7 +180,7 @@ link("Mark blocked", "Sheet: mark blocked")
 node("Telegram: blocked", "telegram", 1.2, {
     "chatId": f"={{{{ {S}.telegramChatId }}}}",
     "text": "=⛔ Post {{ $('Mark blocked').first().json.post_id }} was NOT published.\n\nCompliance issues:\n{{ $('Mark blocked').first().json.notes }}\n\nFix the row in the sheet and set status back to ready.",
-    "additionalFields": {"appendAttribution": False}}, [1760, 560], creds=CRED_TG)
+    "additionalFields": {"appendAttribution": False, "parse_mode": "HTML"}}, [1760, 560], creds=CRED_TG)
 link("Sheet: mark blocked", "Telegram: blocked")
 
 # --- approval
@@ -380,7 +380,8 @@ const text = [
   `👍 Facebook: ${row.facebook_url}`, `🎵 TikTok: ${row.tiktok_status}`,
   ...(tiktokDraft && r.tiktok?.ok ? ['', 'Open TikTok → inbox → finish the post. Caption to paste:', post.caption_tiktok] : []),
 ].join('\n');
-return [{ json: { ...row, _summary: text } }];
+const esc = t => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+return [{ json: { ...row, _summary: esc(text).slice(0, 3800) } }];
 """, [4460, 200])
 link("Collect results", "Build summary")
 code("Row for sheet", r"""
@@ -393,7 +394,7 @@ link("Row for sheet", "Sheet: save links")
 node("Telegram: posted summary", "telegram", 1.2, {
     "chatId": f"={{{{ {S}.telegramChatId }}}}",
     "text": "={{ $('Build summary').first().json._summary }}",
-    "additionalFields": {"appendAttribution": False}}, [5120, 200], creds=CRED_TG)
+    "additionalFields": {"appendAttribution": False, "parse_mode": "HTML"}}, [5120, 200], creds=CRED_TG)
 link("Sheet: save links", "Telegram: posted summary")
 
 notes = [

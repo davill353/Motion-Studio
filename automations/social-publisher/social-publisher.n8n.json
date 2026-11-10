@@ -181,7 +181,8 @@
         "chatId": "={{ $('Settings').first().json.telegramChatId }}",
         "text": "=⛔ Post {{ $('Mark blocked').first().json.post_id }} was NOT published.\n\nCompliance issues:\n{{ $('Mark blocked').first().json.notes }}\n\nFix the row in the sheet and set status back to ready.",
         "additionalFields": {
-          "appendAttribution": false
+          "appendAttribution": false,
+          "parse_mode": "HTML"
         }
       },
       "id": "de449974-f893-5641-9aed-df70c9c91eda",
@@ -896,7 +897,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const post = $('Compliance check').first().json;\nconst r = Object.fromEntries($input.all().map(i => [i.json.platform, i.json]));\nconst fmt = p => r[p] ? (r[p].ok ? r[p].url : `FAILED: ${r[p].error}`) : 'no result';\nconst allOk = ['youtube', 'facebook', 'instagram', 'tiktok'].every(p => r[p]?.ok);\nconst tz = $('Settings').first().json.timezone;\nconst tiktokDraft = $('Settings').first().json.tiktokMode !== 'direct';\nconst row = {\n  post_id: post.post_id,\n  status: allOk ? 'posted' : 'partly posted',\n  youtube_url: fmt('youtube'), instagram_url: fmt('instagram'), facebook_url: fmt('facebook'), tiktok_status: fmt('tiktok'),\n  posted_at: DateTime.now().setZone(tz).toFormat('yyyy-MM-dd HH:mm'),\n};\nconst text = [\n  `${allOk ? '✅' : '⚠️'} ${post.title}`, '',\n  `▶️ YouTube: ${row.youtube_url}`, `📸 Instagram: ${row.instagram_url}`,\n  `👍 Facebook: ${row.facebook_url}`, `🎵 TikTok: ${row.tiktok_status}`,\n  ...(tiktokDraft && r.tiktok?.ok ? ['', 'Open TikTok → inbox → finish the post. Caption to paste:', post.caption_tiktok] : []),\n].join('\\n');\nreturn [{ json: { ...row, _summary: text } }];"
+        "jsCode": "const post = $('Compliance check').first().json;\nconst r = Object.fromEntries($input.all().map(i => [i.json.platform, i.json]));\nconst fmt = p => r[p] ? (r[p].ok ? r[p].url : `FAILED: ${r[p].error}`) : 'no result';\nconst allOk = ['youtube', 'facebook', 'instagram', 'tiktok'].every(p => r[p]?.ok);\nconst tz = $('Settings').first().json.timezone;\nconst tiktokDraft = $('Settings').first().json.tiktokMode !== 'direct';\nconst row = {\n  post_id: post.post_id,\n  status: allOk ? 'posted' : 'partly posted',\n  youtube_url: fmt('youtube'), instagram_url: fmt('instagram'), facebook_url: fmt('facebook'), tiktok_status: fmt('tiktok'),\n  posted_at: DateTime.now().setZone(tz).toFormat('yyyy-MM-dd HH:mm'),\n};\nconst text = [\n  `${allOk ? '✅' : '⚠️'} ${post.title}`, '',\n  `▶️ YouTube: ${row.youtube_url}`, `📸 Instagram: ${row.instagram_url}`,\n  `👍 Facebook: ${row.facebook_url}`, `🎵 TikTok: ${row.tiktok_status}`,\n  ...(tiktokDraft && r.tiktok?.ok ? ['', 'Open TikTok → inbox → finish the post. Caption to paste:', post.caption_tiktok] : []),\n].join('\\n');\nconst esc = t => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');\nreturn [{ json: { ...row, _summary: esc(text).slice(0, 3800) } }];"
       },
       "id": "6bd81745-c41e-53ed-a3a2-c5e8d870e45f",
       "name": "Build summary",
@@ -964,7 +965,8 @@
         "chatId": "={{ $('Settings').first().json.telegramChatId }}",
         "text": "={{ $('Build summary').first().json._summary }}",
         "additionalFields": {
-          "appendAttribution": false
+          "appendAttribution": false,
+          "parse_mode": "HTML"
         }
       },
       "id": "46cf0e84-f292-50ad-9faa-bb14b98fccb4",
