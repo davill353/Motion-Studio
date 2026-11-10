@@ -79,7 +79,7 @@ GitHub API credential with a **fine-grained personal access token**: repository 
    - Facebook Page ID: from `/me/accounts`
    - Instagram user ID: `GET /<PAGE_ID>?fields=instagram_business_account`
 5. Create **two** credentials in n8n:
-   - **"Meta Page token (query)"**: type *Query Auth*, Name `access_token`, Value = Page token
+   - **"Facebook Graph account (Page token)"**: type *Facebook Graph API*, Access Token = Page token (n8n tests it on Save)
    - **"Meta Page token (OAuth header)"**: type *Header Auth*, Name `Authorization`, Value = `OAuth <Page token>` (used for the Instagram video upload)
 6. Your app can post to your own Page and Instagram account in development mode. You only need Meta app review if other people's accounts will use it.
 

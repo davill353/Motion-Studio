@@ -29,7 +29,7 @@ CRED_SHEETS = {"googleSheetsOAuth2Api": {"id": "", "name": "Google Sheets accoun
 CRED_TG = {"telegramApi": {"id": "", "name": "Telegram bot"}}
 CRED_GH = {"githubApi": {"id": "", "name": "GitHub account"}}
 CRED_YT = {"youTubeOAuth2Api": {"id": "", "name": "YouTube account"}}
-CRED_META_Q = {"httpQueryAuth": {"id": "", "name": "Meta Page token (query)"}}
+CRED_META_Q = {"facebookGraphApi": {"id": "", "name": "Facebook Graph account (Page token)"}}
 CRED_META_H = {"httpHeaderAuth": {"id": "", "name": "Meta Page token (OAuth header)"}}
 CRED_TT = {"httpCustomAuth": {"id": "", "name": "TikTok app secrets"}}
 
@@ -255,7 +255,7 @@ link("YouTube: upload Short", "YouTube result")
 # ---------------------------------------------------------------- Facebook
 http("Facebook: upload video", [2260, 100], "POST",
      f"=https://graph-video.facebook.com/{{{{ {GV} }}}}/{{{{ {S}.facebookPageId }}}}/videos",
-     auth=("genericCredentialType", "httpQueryAuth"),
+     auth=("predefinedCredentialType", "facebookGraphApi"),
      multipart={"source": "@binary", "description": f"={{{{ {P}.caption_facebook }}}}", "title": f"={{{{ {P}.title }}}}"},
      creds=CRED_META_Q)
 link("Prepare video", "Facebook: upload video")
@@ -270,7 +270,7 @@ link("Facebook: upload video", "Facebook result")
 # ---------------------------------------------------------------- Instagram
 http("Instagram: create Reel container", [2260, 300], "POST",
      f"=https://graph.facebook.com/{{{{ {GV} }}}}/{{{{ {S}.instagramUserId }}}}/media",
-     auth=("genericCredentialType", "httpQueryAuth"),
+     auth=("predefinedCredentialType", "facebookGraphApi"),
      json_body=f"={{{{ JSON.stringify({{ media_type: 'REELS', upload_type: 'resumable', share_to_feed: true, caption: {P}.caption_instagram }}) }}}}",
      creds=CRED_META_Q)
 link("Prepare video", "Instagram: create Reel container")
@@ -290,7 +290,7 @@ link("Instagram: upload video", "Wait 30 seconds")
 IGC = "$('Attach video (Instagram)').first().json.container_id"
 http("Instagram: check processing", [3140, 300], "GET",
      f"=https://graph.facebook.com/{{{{ {GV} }}}}/{{{{ {IGC} }}}}",
-     auth=("genericCredentialType", "httpQueryAuth"), query={"fields": "status_code,status"}, creds=CRED_META_Q)
+     auth=("predefinedCredentialType", "facebookGraphApi"), query={"fields": "status_code,status"}, creds=CRED_META_Q)
 link("Wait 30 seconds", "Instagram: check processing")
 node("Instagram ready?", "if", 2.2, {"conditions": {
     "options": {"caseSensitive": True, "leftValue": "", "typeValidation": "loose", "version": 2},
@@ -307,11 +307,11 @@ link("Instagram ready?", "Keep waiting?", out=1)
 link("Keep waiting?", "Wait 30 seconds", out=0)
 http("Instagram: publish", [3580, 200], "POST",
      f"=https://graph.facebook.com/{{{{ {GV} }}}}/{{{{ {S}.instagramUserId }}}}/media_publish",
-     auth=("genericCredentialType", "httpQueryAuth"), query={"creation_id": f"={{{{ {IGC} }}}}"}, creds=CRED_META_Q)
+     auth=("predefinedCredentialType", "facebookGraphApi"), query={"creation_id": f"={{{{ {IGC} }}}}"}, creds=CRED_META_Q)
 link("Instagram ready?", "Instagram: publish", out=0)
 http("Instagram: get link", [3800, 200], "GET",
      "=https://graph.facebook.com/{{ " + GV + " }}/{{ $json.id }}",
-     auth=("genericCredentialType", "httpQueryAuth"), query={"fields": "permalink"}, creds=CRED_META_Q)
+     auth=("predefinedCredentialType", "facebookGraphApi"), query={"fields": "permalink"}, creds=CRED_META_Q)
 link("Instagram: publish", "Instagram: get link")
 code("Instagram result", r"""
 const j = $input.first().json;
