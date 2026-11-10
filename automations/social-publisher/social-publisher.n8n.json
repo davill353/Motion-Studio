@@ -173,7 +173,8 @@
           "id": "",
           "name": "Google Sheets account"
         }
-      }
+      },
+      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
@@ -320,7 +321,8 @@
           "id": "",
           "name": "Google Sheets account"
         }
-      }
+      },
+      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
@@ -954,7 +956,8 @@
           "id": "",
           "name": "Google Sheets account"
         }
-      }
+      },
+      "onError": "continueRegularOutput"
     },
     {
       "parameters": {

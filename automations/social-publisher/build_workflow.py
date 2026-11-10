@@ -175,7 +175,7 @@ SHEET_UPDATE = lambda: {
     "sheetName": {"__rl": True, "mode": "name", "value": "Calendar"},
     "columns": {"mappingMode": "autoMapInputData", "value": {}, "matchingColumns": ["post_id"], "schema": []},
     "options": {}}
-node("Sheet: mark blocked", "googleSheets", 4.7, SHEET_UPDATE(), [1540, 560], creds=CRED_SHEETS)
+node("Sheet: mark blocked", "googleSheets", 4.7, SHEET_UPDATE(), [1540, 560], creds=CRED_SHEETS, on_error="continueRegularOutput")
 link("Mark blocked", "Sheet: mark blocked")
 node("Telegram: blocked", "telegram", 1.2, {
     "chatId": f"={{{{ {S}.telegramChatId }}}}",
@@ -206,7 +206,7 @@ const p = $('Compliance check').first().json;
 return [{ json: { post_id: p.post_id, status: 'declined', notes: 'Declined (or no answer) in Telegram' } }];
 """, [1760, 400])
 link("Approved?", "Mark declined", out=1)
-node("Sheet: mark declined", "googleSheets", 4.7, SHEET_UPDATE(), [1980, 400], creds=CRED_SHEETS)
+node("Sheet: mark declined", "googleSheets", 4.7, SHEET_UPDATE(), [1980, 400], creds=CRED_SHEETS, on_error="continueRegularOutput")
 link("Mark declined", "Sheet: mark declined")
 
 # --- download + prepare
@@ -388,7 +388,7 @@ const { _summary, ...row } = $input.first().json;
 return [{ json: row }];
 """, [4680, 200])
 link("Build summary", "Row for sheet")
-node("Sheet: save links", "googleSheets", 4.7, SHEET_UPDATE(), [4900, 200], creds=CRED_SHEETS)
+node("Sheet: save links", "googleSheets", 4.7, SHEET_UPDATE(), [4900, 200], creds=CRED_SHEETS, on_error="continueRegularOutput")
 link("Row for sheet", "Sheet: save links")
 node("Telegram: posted summary", "telegram", 1.2, {
     "chatId": f"={{{{ {S}.telegramChatId }}}}",
