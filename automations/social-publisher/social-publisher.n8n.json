@@ -434,8 +434,8 @@
         "method": "POST",
         "url": "=https://graph-video.facebook.com/{{ $('Settings').first().json.graphVersion }}/{{ $('Settings').first().json.facebookPageId }}/videos",
         "options": {},
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpQueryAuth",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "facebookGraphApi",
         "sendBody": true,
         "contentType": "multipart-form-data",
         "bodyParameters": {
@@ -465,9 +465,9 @@
         100
       ],
       "credentials": {
-        "httpQueryAuth": {
+        "facebookGraphApi": {
           "id": "",
-          "name": "Meta Page token (query)"
+          "name": "Facebook Graph account (Page token)"
         }
       },
       "onError": "continueRegularOutput"
@@ -490,8 +490,8 @@
         "method": "POST",
         "url": "=https://graph.facebook.com/{{ $('Settings').first().json.graphVersion }}/{{ $('Settings').first().json.instagramUserId }}/media",
         "options": {},
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpQueryAuth",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "facebookGraphApi",
         "sendBody": true,
         "contentType": "json",
         "specifyBody": "json",
@@ -506,9 +506,9 @@
         300
       ],
       "credentials": {
-        "httpQueryAuth": {
+        "facebookGraphApi": {
           "id": "",
-          "name": "Meta Page token (query)"
+          "name": "Facebook Graph account (Page token)"
         }
       },
       "onError": "continueRegularOutput"
@@ -586,8 +586,8 @@
         "method": "GET",
         "url": "=https://graph.facebook.com/{{ $('Settings').first().json.graphVersion }}/{{ $('Attach video (Instagram)').first().json.container_id }}",
         "options": {},
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpQueryAuth",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "facebookGraphApi",
         "sendQuery": true,
         "queryParameters": {
           "parameters": [
@@ -607,9 +607,9 @@
         300
       ],
       "credentials": {
-        "httpQueryAuth": {
+        "facebookGraphApi": {
           "id": "",
-          "name": "Meta Page token (query)"
+          "name": "Facebook Graph account (Page token)"
         }
       },
       "onError": "continueRegularOutput"
@@ -686,8 +686,8 @@
         "method": "POST",
         "url": "=https://graph.facebook.com/{{ $('Settings').first().json.graphVersion }}/{{ $('Settings').first().json.instagramUserId }}/media_publish",
         "options": {},
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpQueryAuth",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "facebookGraphApi",
         "sendQuery": true,
         "queryParameters": {
           "parameters": [
@@ -707,9 +707,9 @@
         200
       ],
       "credentials": {
-        "httpQueryAuth": {
+        "facebookGraphApi": {
           "id": "",
-          "name": "Meta Page token (query)"
+          "name": "Facebook Graph account (Page token)"
         }
       },
       "onError": "continueRegularOutput"
@@ -719,8 +719,8 @@
         "method": "GET",
         "url": "=https://graph.facebook.com/{{ $('Settings').first().json.graphVersion }}/{{ $json.id }}",
         "options": {},
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpQueryAuth",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "facebookGraphApi",
         "sendQuery": true,
         "queryParameters": {
           "parameters": [
@@ -740,9 +740,9 @@
         200
       ],
       "credentials": {
-        "httpQueryAuth": {
+        "facebookGraphApi": {
           "id": "",
-          "name": "Meta Page token (query)"
+          "name": "Facebook Graph account (Page token)"
         }
       },
       "onError": "continueRegularOutput"
