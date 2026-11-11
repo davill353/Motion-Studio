@@ -1,0 +1,1 @@
+Every WhatsApp message starts the workflow.

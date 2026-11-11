@@ -1,0 +1,1 @@
+Pinecone stores the business info, so the AI can search it by meaning, not just keywords.

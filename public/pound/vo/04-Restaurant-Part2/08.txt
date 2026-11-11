@@ -1,0 +1,1 @@
+Clear orders go to the owner. Unclear ones go back to the customer.

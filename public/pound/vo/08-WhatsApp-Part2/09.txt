@@ -1,0 +1,1 @@
+Built with n-eight-n, WhatsApp Business, OpenAI, Pinecone and Google Sheets.

@@ -1,0 +1,1 @@
+Then a switch decides: schedule, task, or email.

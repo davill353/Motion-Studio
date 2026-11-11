@@ -1,0 +1,1 @@
+Tap approve, and the booking is saved straight into Google Sheets.

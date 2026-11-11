@@ -1,0 +1,1 @@
+I send a voice note to my Telegram bot, and it checks it's audio.

@@ -1,0 +1,1 @@
+A webhook catches the enquiry the moment the customer hits send.

@@ -1,0 +1,1 @@
+It pulls the clinic's info from Google Sheets, so it's always up to date.
