@@ -24,9 +24,10 @@ const clientSecret = 'PASTE_TIKTOK_CLIENT_SECRET';
 // ==================================================================================================================
 const redirectUri = '{N8N}/webhook/tiktok-callback';
 const q = $input.first().json.query || {{}};
-const authUrl = 'https://www.tiktok.com/v2/auth/authorize/?' + new URLSearchParams({{
-  client_key: clientKey, response_type: 'code', scope: 'user.info.basic,video.upload,video.publish',
-  redirect_uri: redirectUri, state: Math.random().toString(36).slice(2) }}).toString();
+const params = {{ client_key: clientKey, response_type: 'code', scope: 'user.info.basic,video.upload,video.publish',
+  redirect_uri: redirectUri, state: Math.random().toString(36).slice(2) }};
+const authUrl = 'https://www.tiktok.com/v2/auth/authorize/?' +
+  Object.entries(params).map(([k, v]) => encodeURIComponent(k) + '=' + encodeURIComponent(v)).join('&');
 return [{{ json: {{ step: q.code ? 'callback' : (q.error ? 'error' : 'start'), code: q.code, error: q.error_description || q.error,
   clientKey, clientSecret, redirectUri, authUrl }} }}];
 """.strip()}, [240, 300])
