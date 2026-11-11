@@ -1,0 +1,394 @@
+{
+  "name": "The AI Pound: Connect TikTok (one-off)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "GET",
+        "path": "tiktok-connect",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "58abb356-92e0-5c58-a417-1fa3a4dfa5fd",
+      "name": "Start: open this link",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        200
+      ],
+      "webhookId": "c1014e9a-2df5-5b94-bd6a-785574fd4f1e"
+    },
+    {
+      "parameters": {
+        "httpMethod": "GET",
+        "path": "tiktok-callback",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "031c17e5-e1d5-5905-85d2-0a24ff1030c3",
+      "name": "TikTok callback",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        420
+      ],
+      "webhookId": "7f39f951-7c45-5a67-8655-e69ac857792f"
+    },
+    {
+      "parameters": {
+        "jsCode": "// ====== EDIT THESE (TikTok developer portal > your app > Sandbox or Production > Client key / Client secret) ======\nconst clientKey = 'PASTE_TIKTOK_CLIENT_KEY';\nconst clientSecret = 'PASTE_TIKTOK_CLIENT_SECRET';\n// ==================================================================================================================\nconst redirectUri = 'https://davill353.app.n8n.cloud/webhook/tiktok-callback';\nconst q = $input.first().json.query || {};\nconst authUrl = 'https://www.tiktok.com/v2/auth/authorize/?' + new URLSearchParams({\n  client_key: clientKey, response_type: 'code', scope: 'user.info.basic,video.upload,video.publish',\n  redirect_uri: redirectUri, state: Math.random().toString(36).slice(2) }).toString();\nreturn [{ json: { step: q.code ? 'callback' : (q.error ? 'error' : 'start'), code: q.code, error: q.error_description || q.error,\n  clientKey, clientSecret, redirectUri, authUrl } }];"
+      },
+      "id": "c372331a-f7bf-5dcc-93a2-ecec7dec712c",
+      "name": "TikTok app",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        240,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "combinator": "and",
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.step }}",
+                    "rightValue": "start",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ]
+              },
+              "renameOutput": true,
+              "outputKey": "start"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "combinator": "and",
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.step }}",
+                    "rightValue": "callback",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ]
+              },
+              "renameOutput": true,
+              "outputKey": "callback"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra",
+          "renameFallbackOutput": "error"
+        }
+      },
+      "id": "ed2bda60-fdda-5cb1-b3fa-4b41ba7f6dbe",
+      "name": "Which step?",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        460,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "redirect",
+        "redirectURL": "={{ $json.authUrl }}",
+        "options": {}
+      },
+      "id": "9bd01bdd-3a07-5cee-abda-73602c8d7c85",
+      "name": "Send to TikTok login",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        700,
+        120
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://open.tiktokapis.com/v2/oauth/token/",
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "client_key",
+              "value": "={{ $json.clientKey }}"
+            },
+            {
+              "name": "client_secret",
+              "value": "={{ $json.clientSecret }}"
+            },
+            {
+              "name": "code",
+              "value": "={{ $json.code }}"
+            },
+            {
+              "name": "grant_type",
+              "value": "authorization_code"
+            },
+            {
+              "name": "redirect_uri",
+              "value": "={{ $json.redirectUri }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "59585046-68cc-554d-a6ce-c141c335cbe8",
+      "name": "Swap code for tokens",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        700,
+        300
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const j = $input.first().json;\nif (!j.refresh_token) throw new Error('TikTok did not return a token: ' + JSON.stringify(j.error || j).slice(0, 300));\nreturn [{ json: { name: 'tiktok', refresh_token: j.refresh_token, open_id: j.open_id, scope: j.scope,\n  updated_at: DateTime.now().setZone('Europe/London').toFormat('yyyy-MM-dd HH:mm') } }];"
+      },
+      "id": "194a5ebd-eb84-5440-b69b-6ed87b4151d6",
+      "name": "Token row",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        920,
+        300
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "mode": "url",
+          "value": "PASTE_GOOGLE_SHEET_URL"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "TikTok"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "name"
+          ],
+          "schema": []
+        },
+        "options": {}
+      },
+      "id": "60259a30-517f-5edc-b7af-04b75ac5ca68",
+      "name": "Save to sheet (TikTok tab)",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1140,
+        240
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "text/html; charset=utf-8"
+              }
+            ]
+          }
+        },
+        "responseBody": "=<!doctype html><meta name=viewport content='width=device-width,initial-scale=1'><body style=\"font-family:system-ui;background:#16233b;color:#fff;display:grid;place-items:center;min-height:90vh;text-align:center\"><div><h1 style='color:#6ee7a8'>TikTok connected ✅</h1><p>Your TikTok account is linked to The AI Pound Publisher. You can close this tab.</p></div></body>"
+      },
+      "id": "7290935a-cf6b-512c-a372-98decaef3dfe",
+      "name": "Show: connected",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1360,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "text/html; charset=utf-8"
+              }
+            ]
+          }
+        },
+        "responseBody": "=<!doctype html><meta name=viewport content='width=device-width,initial-scale=1'><body style=\"font-family:system-ui;background:#16233b;color:#fff;display:grid;place-items:center;min-height:90vh;text-align:center\"><div><h1 style='color:#6ee7a8'>TikTok connection failed</h1><p>{{ $json.error ? ($json.error.message || $json.error) : 'Something went wrong. Check the execution in n8n.' }}</p></div></body>"
+      },
+      "id": "b480687a-25d9-5887-8284-9d661fe7af5c",
+      "name": "Show: failed",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1140,
+        440
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Connect TikTok (run once)\n1. Paste Client key + secret in **TikTok app**\n2. Add a **TikTok** tab to your sheet with headers: name, refresh_token, open_id, scope, updated_at\n3. Publish this workflow, then open:\nhttps://davill353.app.n8n.cloud/webhook/tiktok-connect",
+        "height": 220,
+        "width": 460
+      },
+      "id": "f3e3feb2-2350-51bf-8a74-0fb5414dd558",
+      "name": "How to use",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        -40
+      ]
+    }
+  ],
+  "connections": {
+    "Start: open this link": {
+      "main": [
+        [
+          {
+            "node": "TikTok app",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "TikTok callback": {
+      "main": [
+        [
+          {
+            "node": "TikTok app",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "TikTok app": {
+      "main": [
+        [
+          {
+            "node": "Which step?",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Which step?": {
+      "main": [
+        [
+          {
+            "node": "Send to TikTok login",
+            "index": 0,
+            "type": "main"
+          }
+        ],
+        [
+          {
+            "node": "Swap code for tokens",
+            "index": 0,
+            "type": "main"
+          }
+        ],
+        [
+          {
+            "node": "Show: failed",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Swap code for tokens": {
+      "main": [
+        [
+          {
+            "node": "Token row",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Token row": {
+      "main": [
+        [
+          {
+            "node": "Save to sheet (TikTok tab)",
+            "index": 0,
+            "type": "main"
+          }
+        ],
+        [
+          {
+            "node": "Show: failed",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Save to sheet (TikTok tab)": {
+      "main": [
+        [
+          {
+            "node": "Show: connected",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Europe/London"
+  },
+  "pinData": {}
+}

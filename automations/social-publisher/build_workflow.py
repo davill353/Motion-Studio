@@ -31,7 +31,6 @@ CRED_GH = {"githubApi": {"id": "", "name": "GitHub account"}}
 CRED_YT = {"youTubeOAuth2Api": {"id": "", "name": "YouTube account"}}
 CRED_META_Q = {"facebookGraphApi": {"id": "", "name": "Facebook Graph account (Page token)"}}
 CRED_META_H = {"httpHeaderAuth": {"id": "", "name": "Meta Page token (OAuth header)"}}
-CRED_TT = {"httpCustomAuth": {"id": "", "name": "TikTok app secrets"}}
 
 def http(name, pos, method, url, *, auth=None, query=None, headers=None, body=None, json_body=None,
          binary_field=None, multipart=None, file_out=None, creds=None, on_error="continueRegularOutput"):
@@ -83,6 +82,8 @@ return [{ json: {
   youtubeCategoryId: '28',         // 28 = Science & Technology, 27 = Education
   tiktokMode: 'inbox',             // 'inbox' = draft in your TikTok inbox; 'direct' = publish (needs TikTok audit)
   tiktokPrivacy: 'SELF_ONLY',      // used in direct mode; 'PUBLIC_TO_EVERYONE' after audit
+  tiktokClientKey: 'PASTE_TIKTOK_CLIENT_KEY',       // TikTok developer portal > your app > Client key
+  tiktokClientSecret: 'PASTE_TIKTOK_CLIENT_SECRET', // keep private; only stored in your n8n
   timezone: 'Europe/London',
 }}];
 """, [220, 300])
@@ -322,24 +323,45 @@ link("Instagram: get link", "Instagram result")
 link("Keep waiting?", "Instagram result", out=1)
 
 # ---------------------------------------------------------------- TikTok
-http("TikTok: refresh access token", [2260, 560], "POST", "https://open.tiktokapis.com/v2/oauth/token/",
-     auth=("genericCredentialType", "httpCustomAuth"), body={"grant_type": "refresh_token"}, creds=CRED_TT)
-link("Prepare video", "TikTok: refresh access token")
-http("TikTok: start upload", [2480, 560], "POST",
+node("TikTok: read saved token", "googleSheets", 4.7, {
+    "operation": "read",
+    "documentId": {"__rl": True, "mode": "url", "value": "PASTE_GOOGLE_SHEET_URL"},
+    "sheetName": {"__rl": True, "mode": "name", "value": "TikTok"},
+    "options": {}}, [2260, 560], creds=CRED_SHEETS, on_error="continueRegularOutput")
+link("Prepare video", "TikTok: read saved token")
+http("TikTok: refresh access token", [2480, 560], "POST", "https://open.tiktokapis.com/v2/oauth/token/",
+     body={"client_key": f"={{{{ {S}.tiktokClientKey }}}}", "client_secret": f"={{{{ {S}.tiktokClientSecret }}}}",
+           "grant_type": "refresh_token", "refresh_token": "={{ $json.refresh_token }}"})
+link("TikTok: read saved token", "TikTok: refresh access token")
+code("TikTok: token row", r"""
+const j = $input.first().json;
+if (!j.refresh_token) return [{ json: { name: 'tiktok', last_error: JSON.stringify(j.error || j).slice(0, 200) } }];
+return [{ json: { name: 'tiktok', refresh_token: j.refresh_token, open_id: j.open_id, scope: j.scope,
+  updated_at: DateTime.now().setZone('Europe/London').toFormat('yyyy-MM-dd HH:mm') } }];
+""", [2700, 560])
+link("TikTok: refresh access token", "TikTok: token row")
+node("TikTok: save new token", "googleSheets", 4.7, {
+    "operation": "appendOrUpdate",
+    "documentId": {"__rl": True, "mode": "url", "value": "PASTE_GOOGLE_SHEET_URL"},
+    "sheetName": {"__rl": True, "mode": "name", "value": "TikTok"},
+    "columns": {"mappingMode": "autoMapInputData", "value": {}, "matchingColumns": ["name"], "schema": []},
+    "options": {}}, [2920, 560], creds=CRED_SHEETS, on_error="continueRegularOutput")
+link("TikTok: token row", "TikTok: save new token")
+http("TikTok: start upload", [3140, 560], "POST",
      f"=https://open.tiktokapis.com/v2/post/publish/{{{{ {S}.tiktokMode === 'direct' ? '' : 'inbox/' }}}}video/init/",
-     headers={"Authorization": "=Bearer {{ $json.access_token }}"},
+     headers={"Authorization": "=Bearer {{ $('TikTok: refresh access token').first().json.access_token }}"},
      json_body=(f"={{{{ JSON.stringify(Object.assign("
                 f"{{ source_info: {{ source: 'FILE_UPLOAD', video_size: {P}.size, chunk_size: {P}.size, total_chunk_count: 1 }} }}, "
                 f"{S}.tiktokMode === 'direct' ? {{ post_info: {{ title: {P}.caption_tiktok, privacy_level: {S}.tiktokPrivacy, "
                 f"disable_comment: false, disable_duet: false, disable_stitch: false }} }} : {{}})) }}}}"))
-link("TikTok: refresh access token", "TikTok: start upload")
+link("TikTok: save new token", "TikTok: start upload")
 code("Attach video (TikTok)", r"""
 const j = $input.first().json;
 return [{ json: { upload_url: j.data?.upload_url, publish_id: j.data?.publish_id, error: j.data?.upload_url ? undefined : (j.error || j) },
           binary: $('Prepare video').first().binary }];
-""", [2700, 560])
+""", [3360, 560])
 link("TikTok: start upload", "Attach video (TikTok)")
-http("TikTok: upload video", [2920, 560], "PUT", "={{ $json.upload_url }}",
+http("TikTok: upload video", [3580, 560], "PUT", "={{ $json.upload_url }}",
      headers={"Content-Type": "video/mp4",
               "Content-Range": f"=bytes 0-{{{{ {P}.size - 1 }}}}/{{{{ {P}.size }}}}"},
      binary_field="video")
@@ -351,7 +373,7 @@ const mode = $('Settings').first().json.tiktokMode;
 const ok = !!a.publish_id && !j.error;
 return [{ json: ok ? { platform: 'tiktok', ok: true, url: mode === 'direct' ? `published (id ${a.publish_id})` : 'sent to your TikTok inbox as a draft' }
                    : { platform: 'tiktok', ok: false, error: JSON.stringify(a.error || j.error || j).slice(0, 300) } }];
-""", [3140, 560])
+""", [3800, 560])
 link("TikTok: upload video", "TikTok result")
 
 # ---------------------------------------------------------------- collect + report
