@@ -1,0 +1,7 @@
+; DNS records for theaipound.co.uk -> GitHub Pages (davill353/Motion-Studio)
+; Import in Cloudflare: DNS > Records > Import. Leave "Proxy imported DNS records" UNTICKED.
+theaipound.co.uk.      3600 IN A     185.199.108.153
+theaipound.co.uk.      3600 IN A     185.199.109.153
+theaipound.co.uk.      3600 IN A     185.199.110.153
+theaipound.co.uk.      3600 IN A     185.199.111.153
+www.theaipound.co.uk.  3600 IN CNAME davill353.github.io.
