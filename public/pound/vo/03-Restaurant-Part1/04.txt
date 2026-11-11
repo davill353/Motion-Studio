@@ -1,0 +1,1 @@
+It reads the message, matches your menu, prices the order, gets your OK, and confirms with the customer.

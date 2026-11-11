@@ -1,0 +1,1 @@
+Schedule pulls today's events from Google Calendar.

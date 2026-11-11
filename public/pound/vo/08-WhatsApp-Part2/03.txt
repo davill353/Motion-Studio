@@ -1,0 +1,1 @@
+It loads the latest menu from Google Sheets.

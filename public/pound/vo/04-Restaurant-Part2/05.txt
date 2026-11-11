@@ -1,0 +1,1 @@
+Then OpenAI works out what the customer actually wants.

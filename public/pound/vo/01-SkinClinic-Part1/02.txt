@@ -1,0 +1,1 @@
+So every message now goes down one of four routes: a booking, a question for a clinician, something not done online, or something unclear.

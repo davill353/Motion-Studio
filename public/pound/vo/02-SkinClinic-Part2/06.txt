@@ -1,0 +1,1 @@
+Then a switch sends it down one of four routes.

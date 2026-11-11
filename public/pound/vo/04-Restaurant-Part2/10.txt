@@ -1,0 +1,1 @@
+Approved orders are saved and confirmed to the customer.

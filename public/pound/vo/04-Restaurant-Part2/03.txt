@@ -1,0 +1,1 @@
+A webhook receives the customer's order.

@@ -37,10 +37,12 @@ export const layout = (def: ReelDef) => {
   });
 };
 
-export const makeReel = (def: ReelDef): React.FC => {
+export type LaidOut = { s: SceneDef; from: number; dur: number }[];
+
+export const makeReelFromLayout = (def: ReelDef, items: LaidOut, aiVoice = false): React.FC => {
   const C: React.FC = () => (
-    <PoundFrame tag={def.tag}>
-      {layout(def).map(({ s, from, dur }, i) => (
+    <PoundFrame tag={def.tag} aiVoice={aiVoice}>
+      {items.map(({ s, from, dur }, i) => (
         <Sequence key={i} from={from} durationInFrames={dur} layout="none">
           <SceneWrap dur={dur} exit={s.type !== "end"}>
             {s.type === "hook" && <HookScene kicker={s.kicker} text={s.text} hl={s.hl} />}
@@ -58,3 +60,5 @@ export const makeReel = (def: ReelDef): React.FC => {
   );
   return C;
 };
+
+export const makeReel = (def: ReelDef): React.FC => makeReelFromLayout(def, layout(def));

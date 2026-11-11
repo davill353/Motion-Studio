@@ -6,8 +6,10 @@ import { makeReel } from "./pound/Reel";
 import { poundReels } from "./pound/reels";
 import { TOTAL } from "./pound/theme";
 import { CaseStudy01 } from "./casestudy/CaseStudy";
+import { makeVoicedReel, MUSIC_ON, voiced } from "./pound/Voiced";
 
 const poundComps = poundReels.map((d) => ({ id: d.id, component: makeReel(d) }));
+const voicedComps = poundReels.map((d) => ({ id: `${d.id}-VO`, component: makeVoicedReel(d, MUSIC_ON), total: voiced(d).total }));
 
 // Register every video in the studio here. Each <Composition> becomes
 // selectable in `npm run dev` and renderable via `npx remotion render <id>`.
@@ -39,6 +41,11 @@ export const RemotionRoot: React.FC = () => {
       <Folder name="AI-Pound-Shorts">
         {poundComps.map((r) => (
           <Composition key={r.id} id={r.id} component={r.component} durationInFrames={TOTAL} fps={30} width={1080} height={1920} />
+        ))}
+      </Folder>
+      <Folder name="AI-Pound-Shorts-Voiceover">
+        {voicedComps.map((r) => (
+          <Composition key={r.id} id={r.id} component={r.component} durationInFrames={r.total} fps={30} width={1080} height={1920} />
         ))}
       </Folder>
       <Folder name="Case-Studies">

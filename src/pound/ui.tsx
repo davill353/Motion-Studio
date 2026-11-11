@@ -7,7 +7,7 @@ import { CONTENT_W, grad, P, SAFE } from "./theme";
 export const clamp = { extrapolateLeft: "clamp", extrapolateRight: "clamp" } as const;
 
 /** Brand background + header. */
-export const PoundFrame: React.FC<{ tag: string; children: React.ReactNode }> = ({ tag, children }) => {
+export const PoundFrame: React.FC<{ tag: string; children: React.ReactNode; aiVoice?: boolean }> = ({ tag, children, aiVoice }) => {
   const frame = useCurrentFrame();
   const t = frame / 30;
   const head = spring({ frame, fps: 30, config: { damping: 200 } });
@@ -51,6 +51,11 @@ export const PoundFrame: React.FC<{ tag: string; children: React.ReactNode }> = 
           {tag}
         </div>
       </div>
+      {aiVoice && (
+        <div style={{ position: "absolute", top: 282, right: SAFE.right, fontSize: 22, fontWeight: 700, letterSpacing: 2, color: "rgba(255,255,255,0.55)", textTransform: "uppercase", opacity: head }}>
+          AI voiceover
+        </div>
+      )}
       {children}
     </AbsoluteFill>
   );

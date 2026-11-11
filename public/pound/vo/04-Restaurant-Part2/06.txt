@@ -1,0 +1,1 @@
+A code step does the maths from your menu, so the AI never makes up a price.
