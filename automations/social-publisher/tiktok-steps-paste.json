@@ -1,0 +1,205 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "read",
+        "documentId": {
+          "__rl": true,
+          "mode": "url",
+          "value": "PASTE_GOOGLE_SHEET_URL"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "TikTok"
+        },
+        "options": {}
+      },
+      "id": "d50a9c02-5dad-5f39-9119-c13b6e96aeac",
+      "name": "TikTok: read saved token",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2260,
+        560
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "",
+          "name": "Google Sheets account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://open.tiktokapis.com/v2/oauth/token/",
+        "options": {},
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "client_key",
+              "value": "={{ $('Settings').first().json.tiktokClientKey }}"
+            },
+            {
+              "name": "client_secret",
+              "value": "={{ $('Settings').first().json.tiktokClientSecret }}"
+            },
+            {
+              "name": "grant_type",
+              "value": "refresh_token"
+            },
+            {
+              "name": "refresh_token",
+              "value": "={{ $json.refresh_token }}"
+            }
+          ]
+        }
+      },
+      "id": "5eaac263-c716-5bae-bb2a-7713ed4c0c9e",
+      "name": "TikTok: refresh access token",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2480,
+        560
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const j = $input.first().json;\nif (!j.refresh_token) return [{ json: { name: 'tiktok', last_error: JSON.stringify(j.error || j).slice(0, 200) } }];\nreturn [{ json: { name: 'tiktok', refresh_token: j.refresh_token, open_id: j.open_id, scope: j.scope,\n  updated_at: DateTime.now().setZone('Europe/London').toFormat('yyyy-MM-dd HH:mm') } }];"
+      },
+      "id": "70214168-3ec2-593f-9dc3-207c6f2028ed",
+      "name": "TikTok: token row",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2700,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "mode": "url",
+          "value": "PASTE_GOOGLE_SHEET_URL"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "TikTok"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "name"
+          ],
+          "schema": []
+        },
+        "options": {}
+      },
+      "id": "e0affb77-3952-5095-a31d-68d669b28479",
+      "name": "TikTok: save new token",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2920,
+        560
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "",
+          "name": "Google Sheets account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://open.tiktokapis.com/v2/post/publish/{{ $('Settings').first().json.tiktokMode === 'direct' ? '' : 'inbox/' }}video/init/",
+        "options": {},
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('TikTok: refresh access token').first().json.access_token }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify(Object.assign({ source_info: { source: 'FILE_UPLOAD', video_size: $('Prepare video').first().json.size, chunk_size: $('Prepare video').first().json.size, total_chunk_count: 1 } }, $('Settings').first().json.tiktokMode === 'direct' ? { post_info: { title: $('Prepare video').first().json.caption_tiktok, privacy_level: $('Settings').first().json.tiktokPrivacy, disable_comment: false, disable_duet: false, disable_stitch: false } } : {})) }}"
+      },
+      "id": "7d7163c0-b32b-5ebd-9426-5ce78d8fdb77",
+      "name": "TikTok: start upload",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3140,
+        560
+      ],
+      "onError": "continueRegularOutput"
+    }
+  ],
+  "connections": {
+    "TikTok: read saved token": {
+      "main": [
+        [
+          {
+            "node": "TikTok: refresh access token",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "TikTok: refresh access token": {
+      "main": [
+        [
+          {
+            "node": "TikTok: token row",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "TikTok: token row": {
+      "main": [
+        [
+          {
+            "node": "TikTok: save new token",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "TikTok: save new token": {
+      "main": [
+        [
+          {
+            "node": "TikTok: start upload",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "TikTok: start upload": {
+      "main": [
+        []
+      ]
+    }
+  }
+}

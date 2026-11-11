@@ -23,7 +23,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// ====== EDIT THESE ======\nreturn [{ json: {\n  githubOwner: 'davill353',\n  githubRepo: 'Motion-Studio',\n  githubBranch: 'claude/jolly-tesla-g7il83', // branch the videos live on (change to 'main' once merged)\n  telegramChatId: 'PASTE_YOUR_TELEGRAM_CHAT_ID',\n  facebookPageId: 'PASTE_FACEBOOK_PAGE_ID',\n  instagramUserId: 'PASTE_INSTAGRAM_BUSINESS_ACCOUNT_ID',\n  graphVersion: 'v21.0',\n  youtubePrivacy: 'private',       // 'private' for testing, then 'public'\n  youtubeCategoryId: '28',         // 28 = Science & Technology, 27 = Education\n  tiktokMode: 'inbox',             // 'inbox' = draft in your TikTok inbox; 'direct' = publish (needs TikTok audit)\n  tiktokPrivacy: 'SELF_ONLY',      // used in direct mode; 'PUBLIC_TO_EVERYONE' after audit\n  timezone: 'Europe/London',\n}}];"
+        "jsCode": "// ====== EDIT THESE ======\nreturn [{ json: {\n  githubOwner: 'davill353',\n  githubRepo: 'Motion-Studio',\n  githubBranch: 'claude/jolly-tesla-g7il83', // branch the videos live on (change to 'main' once merged)\n  telegramChatId: 'PASTE_YOUR_TELEGRAM_CHAT_ID',\n  facebookPageId: 'PASTE_FACEBOOK_PAGE_ID',\n  instagramUserId: 'PASTE_INSTAGRAM_BUSINESS_ACCOUNT_ID',\n  graphVersion: 'v21.0',\n  youtubePrivacy: 'private',       // 'private' for testing, then 'public'\n  youtubeCategoryId: '28',         // 28 = Science & Technology, 27 = Education\n  tiktokMode: 'inbox',             // 'inbox' = draft in your TikTok inbox; 'direct' = publish (needs TikTok audit)\n  tiktokPrivacy: 'SELF_ONLY',      // used in direct mode; 'PUBLIC_TO_EVERYONE' after audit\n  tiktokClientKey: 'PASTE_TIKTOK_CLIENT_KEY',       // TikTok developer portal > your app > Client key\n  tiktokClientSecret: 'PASTE_TIKTOK_CLIENT_SECRET', // keep private; only stored in your n8n\n  timezone: 'Europe/London',\n}}];"
       },
       "id": "379836d4-7690-5c0a-bfc2-a57fbc18875a",
       "name": "Settings",
@@ -763,18 +763,59 @@
     },
     {
       "parameters": {
+        "operation": "read",
+        "documentId": {
+          "__rl": true,
+          "mode": "url",
+          "value": "PASTE_GOOGLE_SHEET_URL"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "TikTok"
+        },
+        "options": {}
+      },
+      "id": "d50a9c02-5dad-5f39-9119-c13b6e96aeac",
+      "name": "TikTok: read saved token",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2260,
+        560
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "",
+          "name": "Google Sheets account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
         "method": "POST",
         "url": "https://open.tiktokapis.com/v2/oauth/token/",
         "options": {},
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpCustomAuth",
         "sendBody": true,
         "contentType": "form-urlencoded",
         "bodyParameters": {
           "parameters": [
             {
+              "name": "client_key",
+              "value": "={{ $('Settings').first().json.tiktokClientKey }}"
+            },
+            {
+              "name": "client_secret",
+              "value": "={{ $('Settings').first().json.tiktokClientSecret }}"
+            },
+            {
               "name": "grant_type",
               "value": "refresh_token"
+            },
+            {
+              "name": "refresh_token",
+              "value": "={{ $json.refresh_token }}"
             }
           ]
         }
@@ -784,13 +825,59 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        2260,
+        2480,
+        560
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const j = $input.first().json;\nif (!j.refresh_token) return [{ json: { name: 'tiktok', last_error: JSON.stringify(j.error || j).slice(0, 200) } }];\nreturn [{ json: { name: 'tiktok', refresh_token: j.refresh_token, open_id: j.open_id, scope: j.scope,\n  updated_at: DateTime.now().setZone('Europe/London').toFormat('yyyy-MM-dd HH:mm') } }];"
+      },
+      "id": "70214168-3ec2-593f-9dc3-207c6f2028ed",
+      "name": "TikTok: token row",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2700,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "mode": "url",
+          "value": "PASTE_GOOGLE_SHEET_URL"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "TikTok"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "name"
+          ],
+          "schema": []
+        },
+        "options": {}
+      },
+      "id": "e0affb77-3952-5095-a31d-68d669b28479",
+      "name": "TikTok: save new token",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2920,
         560
       ],
       "credentials": {
-        "httpCustomAuth": {
+        "googleSheetsOAuth2Api": {
           "id": "",
-          "name": "TikTok app secrets"
+          "name": "Google Sheets account"
         }
       },
       "onError": "continueRegularOutput"
@@ -805,7 +892,7 @@
           "parameters": [
             {
               "name": "Authorization",
-              "value": "=Bearer {{ $json.access_token }}"
+              "value": "=Bearer {{ $('TikTok: refresh access token').first().json.access_token }}"
             }
           ]
         },
@@ -819,7 +906,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        2480,
+        3140,
         560
       ],
       "onError": "continueRegularOutput"
@@ -833,7 +920,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2700,
+        3360,
         560
       ]
     },
@@ -864,7 +951,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        2920,
+        3580,
         560
       ],
       "onError": "continueRegularOutput"
@@ -878,7 +965,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        3140,
+        3800,
         560
       ]
     },
@@ -1196,7 +1283,7 @@
             "type": "main"
           },
           {
-            "node": "TikTok: refresh access token",
+            "node": "TikTok: read saved token",
             "index": 0,
             "type": "main"
           }
@@ -1338,7 +1425,40 @@
         ]
       ]
     },
+    "TikTok: read saved token": {
+      "main": [
+        [
+          {
+            "node": "TikTok: refresh access token",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
     "TikTok: refresh access token": {
+      "main": [
+        [
+          {
+            "node": "TikTok: token row",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "TikTok: token row": {
+      "main": [
+        [
+          {
+            "node": "TikTok: save new token",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "TikTok: save new token": {
       "main": [
         [
           {
