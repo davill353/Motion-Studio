@@ -367,14 +367,25 @@ http("TikTok: upload video", [3580, 560], "PUT", "={{ $json.upload_url }}",
      binary_field="video")
 link("Attach video (TikTok)", "TikTok: upload video")
 code("TikTok result", r"""
+// Reports what TikTok actually did with the upload (from the status check).
 const a = $('Attach video (TikTok)').first().json;
-const j = $input.first().json;
-const mode = $('Settings').first().json.tiktokMode;
-const ok = !!a.publish_id && !j.error;
-return [{ json: ok ? { platform: 'tiktok', ok: true, url: mode === 'direct' ? `published (id ${a.publish_id})` : 'sent to your TikTok inbox as a draft' }
-                   : { platform: 'tiktok', ok: false, error: JSON.stringify(a.error || j.error || j).slice(0, 300) } }];
+const s = $input.first().json;
+const status = s.data?.status, why = s.data?.fail_reason;
+const labels = { SEND_TO_USER_INBOX: 'in your TikTok inbox (Inbox > notifications) as a draft',
+  PUBLISH_COMPLETE: 'published', PROCESSING_UPLOAD: 'uploaded, still processing',
+  PROCESSING_DOWNLOAD: 'still processing' };
+if (a.publish_id && status && status !== 'FAILED')
+  return [{ json: { platform: 'tiktok', ok: true, url: labels[status] || status, publish_id: a.publish_id } }];
+return [{ json: { platform: 'tiktok', ok: false, error: why || JSON.stringify(a.error || s.error || s).slice(0, 300), publish_id: a.publish_id } }];
 """, [3800, 560])
-link("TikTok: upload video", "TikTok result")
+node("Wait 30s (TikTok)", "wait", 1.1, {"amount": 30, "unit": "seconds"}, [3800, 660],
+     extra={"webhookId": str(uuid.uuid5(uuid.NAMESPACE_URL, "tt-wait"))})
+link("TikTok: upload video", "Wait 30s (TikTok)")
+http("TikTok: check status", [4020, 660], "POST", "https://open.tiktokapis.com/v2/post/publish/status/fetch/",
+     headers={"Authorization": "=Bearer {{ $('TikTok: refresh access token').first().json.access_token }}"},
+     json_body="={{ JSON.stringify({ publish_id: $('Attach video (TikTok)').first().json.publish_id }) }}")
+link("Wait 30s (TikTok)", "TikTok: check status")
+link("TikTok: check status", "TikTok result")
 
 # ---------------------------------------------------------------- collect + report
 node("Collect results", "merge", 3.2, {"numberInputs": 4}, [4240, 200])

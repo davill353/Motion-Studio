@@ -958,7 +958,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const a = $('Attach video (TikTok)').first().json;\nconst j = $input.first().json;\nconst mode = $('Settings').first().json.tiktokMode;\nconst ok = !!a.publish_id && !j.error;\nreturn [{ json: ok ? { platform: 'tiktok', ok: true, url: mode === 'direct' ? `published (id ${a.publish_id})` : 'sent to your TikTok inbox as a draft' }\n                   : { platform: 'tiktok', ok: false, error: JSON.stringify(a.error || j.error || j).slice(0, 300) } }];"
+        "jsCode": "// Reports what TikTok actually did with the upload (from the status check).\nconst a = $('Attach video (TikTok)').first().json;\nconst s = $input.first().json;\nconst status = s.data?.status, why = s.data?.fail_reason;\nconst labels = { SEND_TO_USER_INBOX: 'in your TikTok inbox (Inbox > notifications) as a draft',\n  PUBLISH_COMPLETE: 'published', PROCESSING_UPLOAD: 'uploaded, still processing',\n  PROCESSING_DOWNLOAD: 'still processing' };\nif (a.publish_id && status && status !== 'FAILED')\n  return [{ json: { platform: 'tiktok', ok: true, url: labels[status] || status, publish_id: a.publish_id } }];\nreturn [{ json: { platform: 'tiktok', ok: false, error: why || JSON.stringify(a.error || s.error || s).slice(0, 300), publish_id: a.publish_id } }];"
       },
       "id": "159b0f78-4e27-5528-b063-57083792473a",
       "name": "TikTok result",
@@ -968,6 +968,50 @@
         3800,
         560
       ]
+    },
+    {
+      "parameters": {
+        "amount": 30,
+        "unit": "seconds"
+      },
+      "id": "61a8eda9-e7a2-59ed-8d7c-7b86c5806f7c",
+      "name": "Wait 30s (TikTok)",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        3800,
+        660
+      ],
+      "webhookId": "89a69a7c-8497-5a3c-98f2-f488dd0611aa"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://open.tiktokapis.com/v2/post/publish/status/fetch/",
+        "options": {},
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('TikTok: refresh access token').first().json.access_token }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ publish_id: $('Attach video (TikTok)').first().json.publish_id }) }}"
+      },
+      "id": "c70ebcbe-fdbc-5dab-b72d-d60e383a6b23",
+      "name": "TikTok: check status",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4020,
+        660
+      ],
+      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
@@ -1492,6 +1536,28 @@
       ]
     },
     "TikTok: upload video": {
+      "main": [
+        [
+          {
+            "node": "Wait 30s (TikTok)",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Wait 30s (TikTok)": {
+      "main": [
+        [
+          {
+            "node": "TikTok: check status",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "TikTok: check status": {
       "main": [
         [
           {
