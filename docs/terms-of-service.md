@@ -16,4 +16,4 @@ The AI Pound Publisher ("the tool") is an internal automation operated by The AI
 
 **Privacy.** See our Privacy Policy for how data is handled.
 
-**Contact.** davill353@gmail.com
+**Contact.** david@theaipound.co.uk
