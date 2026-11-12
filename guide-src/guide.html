@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8">
+<title>5 AI Automations for UK Small Businesses – The AI Pound</title>
+<style>
+@page { size: A4; margin: 0; }
+:root{--navy:#16233b;--navy2:#1b2a46;--card:#1f2f4f;--mint:#6ee7a8;--teal:#5eead4;--ink:#16233b;--muted:#5b6b85;--line:#e3e8f0}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,'Inter Display',Helvetica,Arial,sans-serif;color:var(--ink);font-size:11.5pt;line-height:1.55}
+.page{width:210mm;height:297mm;padding:22mm 20mm 18mm;position:relative;page-break-after:always;overflow:hidden;background:#fff}
+.page:last-child{page-break-after:auto}
+.foot{position:absolute;left:20mm;right:20mm;bottom:10mm;display:flex;justify-content:space-between;font-size:8.5pt;color:var(--muted);border-top:1px solid var(--line);padding-top:4mm}
+.cover{background:var(--navy);color:#fff}
+.cover .blob1{position:absolute;right:-60mm;top:-50mm;width:170mm;height:170mm;border-radius:50%;background:var(--navy2)}
+.cover .blob2{position:absolute;left:-60mm;bottom:-70mm;width:190mm;height:190mm;border-radius:50%;background:var(--navy2)}
+.cover .inner{position:relative;z-index:1;height:100%;display:flex;flex-direction:column}
+.brand{display:flex;align-items:center;gap:4mm;font-weight:800;font-size:15pt}
+.brand img{width:14mm;height:14mm;border-radius:3mm}
+.kicker{color:var(--mint);font-weight:800;letter-spacing:.18em;text-transform:uppercase;font-size:9.5pt}
+.cover h1{font-size:40pt;line-height:1.05;letter-spacing:-.02em;margin:10mm 0 6mm;font-weight:900}
+.grad{background:linear-gradient(90deg,var(--mint),var(--teal));-webkit-background-clip:text;background-clip:text;color:transparent}
+.cover p.lead{font-size:14pt;color:#cfd8e6;max-width:150mm}
+.cover .bottom{margin-top:auto;display:flex;justify-content:space-between;align-items:flex-end;font-size:10pt;color:#cfd8e6}
+.pill{display:inline-block;border:1.5px solid var(--mint);color:var(--mint);border-radius:99px;padding:2mm 5mm;font-weight:700;font-size:10pt}
+h2{font-size:22pt;line-height:1.15;margin:0 0 5mm;letter-spacing:-.01em}
+h3{font-size:14pt;margin:0 0 2mm}
+p{margin:0 0 3.5mm}
+.muted{color:var(--muted)}
+.num{width:12mm;height:12mm;border-radius:6mm;background:linear-gradient(135deg,var(--mint),var(--teal));color:var(--navy);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14pt;flex-shrink:0}
+.item{display:flex;gap:5mm;padding:5.5mm 0;border-bottom:1px solid var(--line)}
+.item:last-child{border-bottom:none}
+.tags{margin-top:2mm;display:flex;flex-wrap:wrap;gap:2mm}
+.tag{font-size:8.5pt;font-weight:700;background:#eefaf3;color:#1d6b49;border-radius:99px;padding:.8mm 3mm}
+.box{background:#f4f7fb;border-radius:5mm;padding:6mm 7mm;margin:4mm 0}
+.box.mint{background:#eefaf3}
+ul{margin:0 0 3mm;padding-left:5mm} li{margin-bottom:1.6mm}
+.check li{list-style:none;position:relative;padding-left:7mm;margin-left:-5mm}
+.check li:before{content:'';position:absolute;left:0;top:1.3mm;width:3.6mm;height:3.6mm;border:1.6px solid #1d6b49;border-radius:1mm}
+.cta{background:var(--navy);color:#fff}
+.cta .inner{position:relative;z-index:1;height:100%;display:flex;flex-direction:column;justify-content:center}
+.cta h2{font-size:30pt;color:#fff}
+.btn{display:inline-block;background:var(--mint);color:var(--navy);font-weight:900;border-radius:99px;padding:5mm 9mm;font-size:14pt;text-decoration:none;margin:6mm 0}
+.small{font-size:9pt}
+</style></head><body>
+
+<section class="page cover"><div class="blob1"></div><div class="blob2"></div><div class="inner">
+  <div class="brand"><img src="../public/pound/logo.png" alt="">The AI Pound</div>
+  <div style="margin-top:40mm" class="kicker">Free guide · 2026 edition</div>
+  <h1>5 AI automations<br><span class="grad">UK small businesses</span><br>can set up this month</h1>
+  <p class="lead">Practical, low-cost ways to answer customers faster, cut admin and stay in control — explained in plain English.</p>
+  <div class="bottom"><span class="pill">For restaurants · cafés · gyms · salons · trades</span><span>theaipound.co.uk</span></div>
+</div></section>
+
+<section class="page">
+  <div class="kicker">Before you start</div>
+  <h2>AI works best on the boring, repeated jobs</h2>
+  <p>You don't need "an AI strategy". You need the questions you answer every day handled properly — at 9pm, on a Sunday, while you're busy with a customer.</p>
+  <p>Every automation in this guide follows three rules we use with every client:</p>
+  <div class="box mint">
+    <h3>1. Start with your most repeated task</h3><p>Not the most impressive one. The one that eats the most of your week.</p>
+    <h3>2. Ground the AI in your own information</h3><p>Your prices, your menu, your opening hours. It should never make things up.</p>
+    <h3 style="margin-top:4mm">3. Keep a human in the loop</h3><p style="margin:0">Anything involving money, health, complaints or emails to customers gets approved by a person first.</p>
+  </div>
+  <h3 style="margin-top:8mm">What you'll need</h3>
+  <ul>
+    <li>An automation tool such as <strong>n8n</strong>, Make or Zapier (free or low-cost plans exist).</li>
+    <li>An AI model account (for example OpenAI) — usually a few pounds a month at small-business volumes.</li>
+    <li>Your existing tools: WhatsApp Business, Google Sheets, Gmail, Google Calendar, Telegram.</li>
+  </ul>
+  <p class="muted small">Costs and results vary by business and usage. The examples in this guide are designs we build and test; they're not guarantees of specific savings.</p>
+  <div class="foot"><span>The AI Pound · 5 AI automations</span><span>2</span></div>
+</section>
+
+<section class="page">
+  <div class="kicker">The five automations</div>
+  <h2>Pick one. Get it working. Then add the next.</h2>
+  <div class="item"><div class="num">1</div><div>
+    <h3>Instant replies to enquiries</h3>
+    <p>A WhatsApp or website assistant that answers the questions you get every day — prices, opening times, availability — using your own documents, and passes anything tricky to you.</p>
+    <p class="muted"><strong>Best for:</strong> cafés, restaurants, salons, clinics. <strong>Watch out:</strong> give it a clear "I'll pass this to the team" answer for anything it doesn't know.</p>
+    <div class="tags"><span class="tag">WhatsApp Business</span><span class="tag">AI agent</span><span class="tag">Google Sheets</span></div>
+  </div></div>
+  <div class="item"><div class="num">2</div><div>
+    <h3>Bookings and orders you approve with one tap</h3>
+    <p>Customers request a booking or order; you get it on Telegram with Approve / Decline buttons; approved ones are saved to your sheet and the customer is confirmed automatically.</p>
+    <p class="muted"><strong>Best for:</strong> takeaways, salons, trades booking site visits.</p>
+    <div class="tags"><span class="tag">Webhook form</span><span class="tag">Telegram approval</span><span class="tag">Google Sheets</span></div>
+  </div></div>
+  <div class="item"><div class="num">3</div><div>
+    <h3>A voice-note personal assistant</h3>
+    <p>Send a voice note: "What's on today?", "Add a task", "Email Sarah about Friday". It reads your calendar, logs tasks and drafts emails — and nothing is sent until you approve it.</p>
+    <p class="muted"><strong>Best for:</strong> owners who are always on the move.</p>
+    <div class="tags"><span class="tag">Telegram</span><span class="tag">Speech-to-text</span><span class="tag">Gmail</span><span class="tag">Calendar</span></div>
+  </div></div>
+  <div class="foot"><span>The AI Pound · 5 AI automations</span><span>3</span></div>
+</section>
+
+<section class="page">
+  <div class="item" style="padding-top:0"><div class="num">4</div><div>
+    <h3>Lead replies: AI writes it, you approve it</h3>
+    <p>When someone fills in your enquiry form, AI drafts a personal reply. You see it on your phone, tap approve or ask for changes, and it goes out from your own email.</p>
+    <p class="muted"><strong>Best for:</strong> any business where a fast, personal first reply wins the job.</p>
+    <div class="tags"><span class="tag">Form</span><span class="tag">AI draft</span><span class="tag">Telegram approval</span><span class="tag">Gmail</span></div>
+  </div></div>
+  <div class="item"><div class="num">5</div><div>
+    <h3>Post once, publish everywhere</h3>
+    <p>Plan your videos in a simple Google Sheet. At the scheduled time you get a preview, tap "Post it", and it goes to YouTube, Instagram, Facebook and TikTok with the right caption for each — with a built-in check for claims you shouldn't make.</p>
+    <p class="muted"><strong>Best for:</strong> businesses growing on social media without a social media manager.</p>
+    <div class="tags"><span class="tag">Content calendar</span><span class="tag">Compliance check</span><span class="tag">4 platforms</span></div>
+  </div></div>
+
+  <h2 style="margin-top:10mm">Your first-week checklist</h2>
+  <ul class="check">
+    <li>Write down the 10 questions customers ask you most.</li>
+    <li>Put your prices, hours and FAQs in one Google Sheet or document.</li>
+    <li>Choose <strong>one</strong> automation from this guide.</li>
+    <li>Decide what the AI must always hand to a human.</li>
+    <li>Test it with friends or staff before customers see it.</li>
+    <li>After two weeks, look at what it answered — and improve the information it uses.</li>
+  </ul>
+  <div class="foot"><span>The AI Pound · 5 AI automations</span><span>4</span></div>
+</section>
+
+<section class="page">
+  <div class="kicker">Stay safe and compliant</div>
+  <h2>Five rules for using AI with customers in the UK</h2>
+  <div class="box">
+    <h3>1. Be honest that it's automated</h3><p>Tell customers when they're chatting with an assistant, and how to reach a person.</p>
+    <h3>2. Protect personal data (UK GDPR)</h3><p>Only collect what you need, keep it secure, and say in your privacy policy which tools process it.</p>
+    <h3>3. No made-up facts or reviews</h3><p>Ground answers in your own information. Never use AI to write fake reviews or testimonials — it's illegal in the UK.</p>
+    <h3>4. Keep humans on money, health and complaints</h3><p>Use approval steps for refunds, medical questions and anything sensitive.</p>
+    <h3>5. Watch your advertising claims</h3><p style="margin:0">No guaranteed results, and no prescription-medicine claims in ads (ASA / CAP Code).</p>
+  </div>
+  <p class="muted small" style="margin-top:6mm">This guide is general information, not legal advice. If you're unsure, check the ICO and ASA guidance for your sector.</p>
+  <div class="foot"><span>The AI Pound · 5 AI automations</span><span>5</span></div>
+</section>
+
+<section class="page cta"><div class="blob1" style="position:absolute;right:-60mm;top:-50mm;width:170mm;height:170mm;border-radius:50%;background:var(--navy2)"></div><div class="inner">
+  <div class="brand"><img src="../public/pound/logo.png" alt="">The AI Pound</div>
+  <div style="margin-top:30mm" class="kicker">Want help choosing?</div>
+  <h2>Book a free 15-minute<br><span class="grad">workflow audit</span></h2>
+  <p style="font-size:13pt;color:#cfd8e6;max-width:150mm">Tell us how your week runs. We'll point out the one automation that would save you the most time — no obligation, no jargon.</p>
+  <a class="btn" href="https://theaipound.co.uk/book/">theaipound.co.uk/book</a>
+  <p style="color:#cfd8e6">Follow The AI Pound for build-alongs and case studies: <span style="color:var(--mint)">linktr.ee/theaipound</span></p>
+  <p class="small" style="color:#8fa0bb;margin-top:auto">© 2026 The AI Pound · UK · davill353@gmail.com</p>
+</div></section>
+</body></html>
