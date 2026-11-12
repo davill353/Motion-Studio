@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /book/thanks/
+Disallow: /guide/thanks/
+
+Sitemap: https://theaipound.co.uk/sitemap.xml
