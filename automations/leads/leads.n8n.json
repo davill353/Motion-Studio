@@ -1,0 +1,1176 @@
+{
+  "name": "The AI Pound: Leads (forms + comment replies)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "lead-guide",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "41fec979-6604-5163-9f8b-95bdff977b5d",
+      "name": "Guide form",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "a73ba241-4134-587f-b072-d5bcbb86259e"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "lead-book",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "eabcef16-0ee1-514b-923a-157ba0f73c0f",
+      "name": "Audit form",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        200
+      ],
+      "webhookId": "b1cebbb3-178c-5824-8f6a-08f0acd29d61"
+    },
+    {
+      "parameters": {
+        "jsCode": "// ====== EDIT THESE ======\nreturn [{ json: {\n  telegramChatId: 'PASTE_YOUR_TELEGRAM_CHAT_ID',\n  instagramUserId: 'PASTE_INSTAGRAM_BUSINESS_ACCOUNT_ID',\n  facebookPageId: 'PASTE_FACEBOOK_PAGE_ID',\n  graphVersion: 'v21.0',\n  ownUsernames: ['theaipound', 'The AI Pound'],   // never reply to ourselves\n  guideUrl: 'theaipound.co.uk/guide',\n  bookUrl: 'theaipound.co.uk/book',\n  maxAgeDays: 7,                                  // only reply to comments from the last 7 days\n}}];"
+      },
+      "id": "7e76a606-8e91-55e0-a296-589a4e9826b6",
+      "name": "Settings (forms)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        220,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const w = $('Guide form').isExecuted ? $('Guide form').first().json : $('Audit form').first().json;\nconst b = w.body || {};\nconst isBook = String(w.webhookUrl || '').includes('lead-book') || !$('Guide form').isExecuted;\nconst clean = v => String(v ?? '').trim().slice(0, 1000);\nconst spam = !!clean(b.website) || !/^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$/.test(clean(b.email));\nconst row = {\n  lead_id: 'L' + Date.now().toString(36),\n  created_at: DateTime.now().setZone('Europe/London').toFormat('yyyy-MM-dd HH:mm'),\n  source: isBook ? 'audit-form' : 'guide-form', keyword: '',\n  name: clean(b.name), username: '', email: clean(b.email), phone: clean(b.phone),\n  business: clean(b.business), message: clean(b.message), times: clean(b.times),\n  marketing_ok: b.marketing === 'yes' ? 'yes' : 'no', comment_id: '', link: '', status: 'new',\n};\nreturn [{ json: { row, spam, redirect: isBook ? 'https://theaipound.co.uk/book/thanks/' : 'https://theaipound.co.uk/guide/thanks/' } }];"
+      },
+      "id": "4d7dab14-a2dc-51e5-bb88-2d01f52bb99e",
+      "name": "Lead from form",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        440,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "redirect",
+        "redirectURL": "={{ $json.redirect }}",
+        "options": {}
+      },
+      "id": "251e0128-cc77-5702-9585-8aff3a0ffdd4",
+      "name": "Send to thank-you page",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        660,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "s1",
+              "leftValue": "={{ $('Lead from form').first().json.spam }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "e3bd3b58-20cb-5ba6-8189-a2c0529aca19",
+      "name": "Real person?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        880,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: $('Lead from form').first().json.row }];"
+      },
+      "id": "702b6642-066a-5cbd-9a02-a0989a1ae45f",
+      "name": "Form lead row",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1100,
+        40
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "url",
+          "value": "PASTE_GOOGLE_SHEET_URL"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Leads"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": []
+        },
+        "options": {}
+      },
+      "id": "df0f36d6-753e-562a-bee9-dadbe352547d",
+      "name": "Save form lead",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1320,
+        40
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "",
+          "name": "Google Sheets account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Settings').first().json.telegramChatId }}",
+        "text": "={{ (() => { const r = $('Form lead row').first().json; const e = t => String(t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');\nreturn (r.source === 'audit-form' ? '📅 <b>Audit request</b>' : '📘 <b>Guide download</b>') + '\\n\\n' + e(r.name) + ' · ' + e(r.email) + (r.phone ? ' · ' + e(r.phone) : '') +\n (r.business ? '\\n🏷 ' + e(r.business) : '') + (r.message ? '\\n💬 ' + e(r.message) : '') + (r.times ? '\\n🕒 ' + e(r.times) : '') + '\\n✉️ Marketing OK: ' + r.marketing_ok; })() }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "773a641e-bfa4-5360-ad26-dca487005c16",
+      "name": "Telegram: new form lead",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1540,
+        40
+      ],
+      "credentials": {
+        "telegramApi": {
+          "id": "",
+          "name": "Telegram bot"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 10
+            }
+          ]
+        }
+      },
+      "id": "c284f488-8bcc-58c0-a68c-803743d4330c",
+      "name": "Every 10 minutes",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        600
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// ====== EDIT THESE ======\nreturn [{ json: {\n  telegramChatId: 'PASTE_YOUR_TELEGRAM_CHAT_ID',\n  instagramUserId: 'PASTE_INSTAGRAM_BUSINESS_ACCOUNT_ID',\n  facebookPageId: 'PASTE_FACEBOOK_PAGE_ID',\n  graphVersion: 'v21.0',\n  ownUsernames: ['theaipound', 'The AI Pound'],   // never reply to ourselves\n  guideUrl: 'theaipound.co.uk/guide',\n  bookUrl: 'theaipound.co.uk/book',\n  maxAgeDays: 7,                                  // only reply to comments from the last 7 days\n}}];"
+      },
+      "id": "2d5e8b22-9cbc-5cef-9041-b145e2080f40",
+      "name": "Settings",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        220,
+        600
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "read",
+        "documentId": {
+          "__rl": true,
+          "mode": "url",
+          "value": "PASTE_GOOGLE_SHEET_URL"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Leads"
+        },
+        "options": {}
+      },
+      "id": "498f058f-5342-5122-8547-53661c0b65d2",
+      "name": "Read Leads",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        440,
+        600
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "",
+          "name": "Google Sheets account"
+        }
+      },
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: { known: $input.all().map(i => String(i.json.comment_id || '')).filter(Boolean) } }];"
+      },
+      "id": "1915af8f-ae21-5bf9-8127-e6f0a064ac60",
+      "name": "Ready",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        660,
+        600
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://graph.facebook.com/{{ $('Settings').first().json.graphVersion }}/{{ $('Settings').first().json.instagramUserId }}/media",
+        "options": {},
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "facebookGraphApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "fields",
+              "value": "id,permalink,timestamp"
+            },
+            {
+              "name": "limit",
+              "value": "10"
+            }
+          ]
+        }
+      },
+      "id": "7083a95b-90e1-5252-9197-1258a9e2e7a3",
+      "name": "IG: recent posts",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        880,
+        460
+      ],
+      "credentials": {
+        "facebookGraphApi": {
+          "id": "",
+          "name": "Facebook Graph account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "return ($input.first().json.data || []).map(p => ({ json: p }));"
+      },
+      "id": "2fc06f2b-8f7e-5476-8da7-7dbfcd34ef99",
+      "name": "IG: one item per post",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1100,
+        460
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://graph.facebook.com/{{ $('Settings').first().json.graphVersion }}/{{ $json.id }}/comments",
+        "options": {},
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "facebookGraphApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "fields",
+              "value": "id,text,username,timestamp"
+            },
+            {
+              "name": "limit",
+              "value": "50"
+            }
+          ]
+        }
+      },
+      "id": "03adc22a-277f-54e0-95c7-edabcea215e3",
+      "name": "IG: comments",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1320,
+        460
+      ],
+      "credentials": {
+        "facebookGraphApi": {
+          "id": "",
+          "name": "Facebook Graph account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const posts = $('IG: one item per post').all();\nreturn $input.all().flatMap((it, i) => (it.json.data || []).map(c => ({ json: {\n  platform: 'instagram', comment_id: c.id, username: c.username || '', text: c.text || '', created: c.timestamp, link: posts[i]?.json.permalink || '' } })));"
+      },
+      "id": "79ef458f-dacd-5fdc-99b1-7726a92d9909",
+      "name": "IG: normalise",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1540,
+        460
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://graph.facebook.com/{{ $('Settings').first().json.graphVersion }}/{{ $('Settings').first().json.facebookPageId }}/posts",
+        "options": {},
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "facebookGraphApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "fields",
+              "value": "id,permalink_url,comments.limit(50){id,message,from,created_time}"
+            },
+            {
+              "name": "limit",
+              "value": "10"
+            }
+          ]
+        }
+      },
+      "id": "c4035645-b582-5a1e-9a46-4d3b204e90b3",
+      "name": "FB: recent posts + comments",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        880,
+        620
+      ],
+      "credentials": {
+        "facebookGraphApi": {
+          "id": "",
+          "name": "Facebook Graph account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "return ($input.first().json.data || []).flatMap(p => ((p.comments || {}).data || []).map(c => ({ json: {\n  platform: 'facebook', comment_id: c.id, username: (c.from || {}).name || '', text: c.message || '', created: c.created_time, link: p.permalink_url || '' } })));"
+      },
+      "id": "70bcd11c-7dd4-588b-b3cd-c721141beba1",
+      "name": "FB: normalise",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1100,
+        620
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://www.googleapis.com/youtube/v3/channels",
+        "options": {},
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "youTubeOAuth2Api",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "part",
+              "value": "id"
+            },
+            {
+              "name": "mine",
+              "value": "true"
+            }
+          ]
+        }
+      },
+      "id": "09eccd9f-467a-5c29-b812-5dc4e2c3793b",
+      "name": "YT: my channel",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        880,
+        780
+      ],
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "",
+          "name": "YouTube account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://www.googleapis.com/youtube/v3/commentThreads",
+        "options": {},
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "youTubeOAuth2Api",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "part",
+              "value": "snippet"
+            },
+            {
+              "name": "allThreadsRelatedToChannelId",
+              "value": "={{ ($json.items || [])[0]?.id }}"
+            },
+            {
+              "name": "maxResults",
+              "value": "50"
+            },
+            {
+              "name": "order",
+              "value": "time"
+            }
+          ]
+        }
+      },
+      "id": "1f748ea9-feee-58d9-afee-78fe2ab08d5c",
+      "name": "YT: recent comments",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1100,
+        780
+      ],
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "",
+          "name": "YouTube account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "return ($input.first().json.items || []).map(t => { const c = t.snippet.topLevelComment; const s = c.snippet; return { json: {\n  platform: 'youtube', comment_id: c.id, username: s.authorDisplayName || '', text: s.textOriginal || s.textDisplay || '', created: s.publishedAt,\n  link: s.videoId ? 'https://youtube.com/shorts/' + s.videoId : '' } }; });"
+      },
+      "id": "899a32bc-3408-514f-9762-2bb63831670a",
+      "name": "YT: normalise",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1320,
+        780
+      ]
+    },
+    {
+      "parameters": {
+        "numberInputs": 3
+      },
+      "id": "9ad0962e-0faf-5a4e-8e11-45fd4fe31b31",
+      "name": "All comments",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1760,
+        620
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const st = $('Settings').first().json;\nconst known = new Set($('Ready').first().json.known);\nconst own = st.ownUsernames.map(u => u.toLowerCase());\nconst cutoff = DateTime.now().minus({ days: st.maxAgeDays });\nconst seen = new Set(); const out = [];\nfor (const { json: c } of $input.all()) {\n  if (!c.comment_id || known.has(String(c.comment_id)) || seen.has(c.comment_id)) continue;\n  if (own.includes(String(c.username).toLowerCase())) continue;\n  const when = DateTime.fromISO(String(c.created).replace(/\\+0000$/, 'Z'));\n  if (when.isValid && when < cutoff) continue;\n  const kw = /\\bautomate\\b/i.test(c.text) ? 'AUTOMATE' : /\\baudit\\b/i.test(c.text) ? 'AUDIT' : null;\n  if (!kw) continue;\n  seen.add(c.comment_id);\n  const hi = c.platform === 'instagram' && c.username ? `@${c.username}` : (c.username || 'there').split(' ')[0];\n  const reply = kw === 'AUTOMATE'\n    ? `Thanks ${hi}! 🙌 Here's your free guide, \"5 AI automations UK small businesses can set up this month\": ${st.guideUrl}`\n    : `Thanks ${hi}! 🙌 Book your free 15-minute workflow audit here: ${st.bookUrl}`;\n  out.push({ json: { ...c, keyword: kw, reply } });\n}\nreturn out.slice(0, 20);"
+      },
+      "id": "3970144a-98fb-5adb-bac0-b2d5cd9342b0",
+      "name": "Find keyword comments",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1980,
+        620
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "return $input.all().map(({ json: c }) => ({ json: {\n  lead_id: 'C' + String(c.comment_id).slice(-10), created_at: DateTime.now().setZone('Europe/London').toFormat('yyyy-MM-dd HH:mm'),\n  source: c.platform, keyword: c.keyword, name: '', username: c.username, email: '', phone: '', business: '', message: String(c.text).slice(0, 500),\n  times: '', marketing_ok: 'no', comment_id: String(c.comment_id), link: c.link, status: 'auto-replied' } }));"
+      },
+      "id": "ad94b22f-ff60-5b0a-b4a2-b5023ef1f1e2",
+      "name": "Comment lead rows",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2200,
+        480
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "url",
+          "value": "PASTE_GOOGLE_SHEET_URL"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Leads"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": []
+        },
+        "options": {}
+      },
+      "id": "0d7ee3e7-7f9e-56a1-b4b9-ef51b72d6f25",
+      "name": "Save comment leads",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2420,
+        480
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "",
+          "name": "Google Sheets account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const e = t => String(t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');\nconst icon = { instagram: '📸', facebook: '👍', youtube: '▶️' };\nreturn $('Comment lead rows').all().map(({ json: r }) => ({ json: { text:\n  `🔥 <b>New lead: ${e(r.keyword)}</b>\\n${icon[r.source] || ''} ${e(r.source)} · ${e(r.username)}\\n💬 \"${e(r.message.slice(0, 200))}\"\\n🔗 ${e(r.link)}\\n\\nAuto-reply sent with the ${r.keyword === 'AUDIT' ? 'booking' : 'guide'} link. Follow up personally if they're a good fit.` } }));"
+      },
+      "id": "d95817a4-6091-51bc-baa3-8b60a5727105",
+      "name": "Telegram text",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2640,
+        480
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Settings').first().json.telegramChatId }}",
+        "text": "={{ $json.text }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "477b2b47-b509-532b-ac92-82dd896b2266",
+      "name": "Telegram: new comment lead",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2860,
+        480
+      ],
+      "credentials": {
+        "telegramApi": {
+          "id": "",
+          "name": "Telegram bot"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "combinator": "and",
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.platform }}",
+                    "rightValue": "instagram",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ]
+              },
+              "renameOutput": true,
+              "outputKey": "instagram"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "combinator": "and",
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.platform }}",
+                    "rightValue": "facebook",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ]
+              },
+              "renameOutput": true,
+              "outputKey": "facebook"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "combinator": "and",
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.platform }}",
+                    "rightValue": "youtube",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ]
+              },
+              "renameOutput": true,
+              "outputKey": "youtube"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "fab6c364-540c-551e-ab75-d9383faa3da0",
+      "name": "Which platform?",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        2200,
+        760
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/{{ $('Settings').first().json.graphVersion }}/{{ $json.comment_id }}/replies",
+        "options": {},
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "facebookGraphApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "message",
+              "value": "={{ $json.reply }}"
+            }
+          ]
+        }
+      },
+      "id": "0fb49ffc-cd5e-5b85-abaf-d89793e3831d",
+      "name": "IG: reply",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2420,
+        660
+      ],
+      "credentials": {
+        "facebookGraphApi": {
+          "id": "",
+          "name": "Facebook Graph account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/{{ $('Settings').first().json.graphVersion }}/{{ $json.comment_id }}/comments",
+        "options": {},
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "facebookGraphApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "message",
+              "value": "={{ $json.reply }}"
+            }
+          ]
+        }
+      },
+      "id": "6ce90aa0-bc3c-573a-b374-e65853b0bfcf",
+      "name": "FB: reply",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2420,
+        780
+      ],
+      "credentials": {
+        "facebookGraphApi": {
+          "id": "",
+          "name": "Facebook Graph account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://www.googleapis.com/youtube/v3/comments",
+        "options": {},
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "youTubeOAuth2Api",
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ snippet: { parentId: $json.comment_id, textOriginal: $json.reply } }) }}",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "part",
+              "value": "snippet"
+            }
+          ]
+        }
+      },
+      "id": "438ac283-1731-53a3-a09c-e354c7b3a338",
+      "name": "YT: reply",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2420,
+        900
+      ],
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "",
+          "name": "YouTube account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "content": "## A. Website forms → Leads tab + Telegram",
+        "height": 100,
+        "width": 520
+      },
+      "id": "6d25e605-4e9c-5d0e-8bf1-2d236335bdbb",
+      "name": "Note 1",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        -160
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## B. Keyword comments (AUTOMATE / AUDIT) → reply + Leads tab + Telegram",
+        "height": 100,
+        "width": 520
+      },
+      "id": "657c59bf-9cfb-555e-85d2-ad9632b8b0cc",
+      "name": "Note 2",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        440
+      ]
+    }
+  ],
+  "connections": {
+    "Guide form": {
+      "main": [
+        [
+          {
+            "node": "Settings (forms)",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Audit form": {
+      "main": [
+        [
+          {
+            "node": "Settings (forms)",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Settings (forms)": {
+      "main": [
+        [
+          {
+            "node": "Lead from form",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Lead from form": {
+      "main": [
+        [
+          {
+            "node": "Send to thank-you page",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Send to thank-you page": {
+      "main": [
+        [
+          {
+            "node": "Real person?",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Real person?": {
+      "main": [
+        [
+          {
+            "node": "Form lead row",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Form lead row": {
+      "main": [
+        [
+          {
+            "node": "Save form lead",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Save form lead": {
+      "main": [
+        [
+          {
+            "node": "Telegram: new form lead",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Every 10 minutes": {
+      "main": [
+        [
+          {
+            "node": "Settings",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Settings": {
+      "main": [
+        [
+          {
+            "node": "Read Leads",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Read Leads": {
+      "main": [
+        [
+          {
+            "node": "Ready",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Ready": {
+      "main": [
+        [
+          {
+            "node": "IG: recent posts",
+            "index": 0,
+            "type": "main"
+          },
+          {
+            "node": "FB: recent posts + comments",
+            "index": 0,
+            "type": "main"
+          },
+          {
+            "node": "YT: my channel",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "IG: recent posts": {
+      "main": [
+        [
+          {
+            "node": "IG: one item per post",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "IG: one item per post": {
+      "main": [
+        [
+          {
+            "node": "IG: comments",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "IG: comments": {
+      "main": [
+        [
+          {
+            "node": "IG: normalise",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "FB: recent posts + comments": {
+      "main": [
+        [
+          {
+            "node": "FB: normalise",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "YT: my channel": {
+      "main": [
+        [
+          {
+            "node": "YT: recent comments",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "YT: recent comments": {
+      "main": [
+        [
+          {
+            "node": "YT: normalise",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "IG: normalise": {
+      "main": [
+        [
+          {
+            "node": "All comments",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "FB: normalise": {
+      "main": [
+        [
+          {
+            "node": "All comments",
+            "index": 1,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "YT: normalise": {
+      "main": [
+        [
+          {
+            "node": "All comments",
+            "index": 2,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "All comments": {
+      "main": [
+        [
+          {
+            "node": "Find keyword comments",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Find keyword comments": {
+      "main": [
+        [
+          {
+            "node": "Comment lead rows",
+            "index": 0,
+            "type": "main"
+          },
+          {
+            "node": "Which platform?",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Comment lead rows": {
+      "main": [
+        [
+          {
+            "node": "Save comment leads",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Save comment leads": {
+      "main": [
+        [
+          {
+            "node": "Telegram text",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Telegram text": {
+      "main": [
+        [
+          {
+            "node": "Telegram: new comment lead",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Which platform?": {
+      "main": [
+        [
+          {
+            "node": "IG: reply",
+            "index": 0,
+            "type": "main"
+          }
+        ],
+        [
+          {
+            "node": "FB: reply",
+            "index": 0,
+            "type": "main"
+          }
+        ],
+        [
+          {
+            "node": "YT: reply",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Europe/London"
+  },
+  "pinData": {}
+}
