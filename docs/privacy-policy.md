@@ -18,4 +18,4 @@ The AI Pound Publisher is an internal tool operated by The AI Pound (UK). It pub
 
 **Removing access.** Access can be revoked at any time at https://myaccount.google.com/permissions (Google), in Facebook/Instagram settings under Business Integrations, or in TikTok's app permissions.
 
-**Contact.** davill353@gmail.com
+**Contact.** david@theaipound.co.uk
