@@ -1,69 +1,38 @@
-# Motion Studio
+# Motion-Studio
 
-A code-based motion graphics studio built with [Remotion](https://www.remotion.dev) — videos are React components, rendered to MP4 with headless Chromium + FFmpeg.
+The codebase behind [theaipound.co.uk](https://theaipound.co.uk) and the publishing pipeline that puts The AI Pound's videos on four platforms.
 
-## Quick start
+## What's in here
 
-```bash
-npm install
-npm run dev            # open Remotion Studio (live preview + timeline)
-npm run render:hello   # render the test video to out/hello-studio.mp4
-```
-
-Render any composition:
-
-```bash
-npx remotion render <CompositionId> out/<name>.mp4
-```
-
-## Project layout
+`docs/` is the website, served by GitHub Pages from this folder:
 
 ```
-src/
-  index.ts                 # entry point (registerRoot)
-  Root.tsx                 # registers all compositions (id, size, fps, duration)
-  compositions/
-    HelloStudio.tsx        # 3s "Hello from my studio" test video
-public/                    # static assets (images, fonts, audio) via staticFile()
-renders/                   # committed sample renders
-out/                       # local render output (git-ignored)
-remotion.config.ts         # render settings
+docs/
+  index.html                 home: what I do, the three services and their prices
+  pilot/                     clinic pilot page: WhatsApp enquiry assistant, two weeks free
+  guide/                     free guide landing page (form posts to n8n)
+  book/                      free 15-minute audit booking page (form posts to n8n)
+  shop/                      the Etsy range, with links to the listings
+  privacy/  terms/           policies
+  logo.png  robots.txt  sitemap.xml
 ```
 
-## AI Business Summit story reels
+Plain HTML and CSS, no build step, no framework. Edit the file, commit, push, and it's live in about a minute.
 
-Five vertical 1080×1920 Instagram Story reels live in `src/reels/` (rendered copies in `renders/ai-summit-stories/`):
+## The forms
 
-| Reel | Length | Message |
-| --- | --- | --- |
-| Reel1-AIForYourLife | 12s | AI isn't just for business — it's for your life |
-| Reel2-SaveMoney | 14s | Ask AI where your money goes |
-| Reel3-SideHustle | 14s | Idea → name → price → first post |
-| Reel4-FamilyFinances | 14s | Budget meal planning for the family |
-| Reel5-NoTechSkills | 12s | Parents, students, employees, retirees, business owners |
+Both forms post straight to n8n webhooks, which write the lead to a Google Sheet, label where it came from, and notify by Telegram. If a form ever looks broken, check the workflow before the page.
 
-- Change the summit name, tagline and call-to-action for all reels in `src/reels/brand.ts`.
-- Text stays within Instagram's story safe zone (clear of the top profile bar and bottom reply bar).
-- Re-render all five with `npm run render:stories`.
+## The publisher
 
-## The AI Pound: TikTok / YouTube Shorts
+Videos live in `renders/`. A row in a Google Sheet queues a post: title, captions and tags per platform, video path, publish time. The n8n workflow then:
 
-Nine 60-second vertical (1080×1920) explainer reels, one or two per n8n workflow. They live in `src/pound/`:
+1. Checks the video is committed here, and refuses to publish a file that only exists on a local machine.
+2. Uploads and publishes to TikTok, YouTube Shorts, Instagram and Facebook.
+3. Writes the live links back to the sheet row.
 
-- `theme.ts` sets the brand colours, logo, call-to-action text and safe zones. Edit it to rebrand all nine reels.
-- `reels.ts` holds the script for every reel: hooks, chats, workflow diagrams and captions. Change wording here.
-- `Flow.tsx` draws the animated workflow diagram, `Chat.tsx` the phone chat mockup, and `ui.tsx` the shared scenes.
-- The logo and workflow screenshots are in `public/pound/`.
+Nothing publishes without an approval from the owner's phone first. Commit history is the audit trail, so the pipeline can always prove which version of a video went out.
 
-Render all nine with `./render-shorts.sh`. The output goes to `renders/ai-pound-shorts/`, together with `VOICEOVER-SCRIPTS.md`, which gives timestamps for recording your voiceover.
+## Working method
 
-## Adding a new video
-
-1. Create a component in `src/compositions/`, using `useCurrentFrame()` and `interpolate()` / `spring()` to animate.
-2. Register it in `src/Root.tsx` with a `<Composition id="..." />`.
-3. Preview with `npm run dev`, then render with `npx remotion render <id>`.
-
-## Notes
-
-- If Remotion can't download its own headless browser (e.g. restricted network), point it at an existing Chromium: `--browser-executable=/path/to/chromium`.
-- Remotion has its own license — free for individuals and small teams; see https://www.remotion.dev/license.
+Some commits are authored as `Linda (AI Pound)`: an AI agent acting on my instruction, with every change reviewed and approved by me before it ships. That's the same principle the client systems run on.
