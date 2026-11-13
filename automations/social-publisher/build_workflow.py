@@ -73,7 +73,7 @@ code("Settings", r"""
 return [{ json: {
   githubOwner: 'davill353',
   githubRepo: 'Motion-Studio',
-  githubBranch: 'claude/jolly-tesla-g7il83', // branch the videos live on (change to 'main' once merged)
+  githubBranch: 'main',            // branch the videos live on
   telegramChatId: 'PASTE_YOUR_TELEGRAM_CHAT_ID',
   facebookPageId: 'PASTE_FACEBOOK_PAGE_ID',
   instagramUserId: 'PASTE_INSTAGRAM_BUSINESS_ACCOUNT_ID',
