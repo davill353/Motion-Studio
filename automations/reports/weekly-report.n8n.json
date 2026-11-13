@@ -1,0 +1,643 @@
+{
+  "name": "The AI Pound: Weekly report",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "38 8 * * 1"
+            }
+          ]
+        }
+      },
+      "id": "36c14e93-c216-579e-bed0-b05af0d1379e",
+      "name": "Every Monday 08:38",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// ====== EDIT THESE ======\nreturn [{ json: {\n  telegramChatId: 'PASTE_YOUR_TELEGRAM_CHAT_ID',\n  instagramUserId: 'PASTE_INSTAGRAM_BUSINESS_ACCOUNT_ID',\n  facebookPageId: 'PASTE_FACEBOOK_PAGE_ID',\n  graphVersion: 'v21.0',\n  days: 7,\n}}];"
+      },
+      "id": "81a6eae5-731d-5f14-b547-6f690eb694d1",
+      "name": "Settings",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        220,
+        300
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://graph.facebook.com/{{ $('Settings').first().json.graphVersion }}/{{ $('Settings').first().json.instagramUserId }}/media",
+        "options": {},
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "facebookGraphApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "fields",
+              "value": "id,caption,permalink,timestamp,like_count,comments_count,media_product_type"
+            },
+            {
+              "name": "limit",
+              "value": "25"
+            }
+          ]
+        }
+      },
+      "id": "f0cc2334-0812-5861-81b1-0836605e990d",
+      "name": "IG: recent posts",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        440,
+        300
+      ],
+      "credentials": {
+        "facebookGraphApi": {
+          "id": "",
+          "name": "Facebook Graph account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const days = $('Settings').first().json.days, cutoff = DateTime.now().minus({ days });\nconst posts = ($input.first().json.data || []).filter(p => DateTime.fromISO(String(p.timestamp).replace(/\\+0000$/, 'Z')) >= cutoff);\nreturn posts.length ? posts.map(p => ({ json: p })) : [{ json: { none: true } }];"
+      },
+      "id": "65592fe0-4911-577b-ba41-c2b2f00d8340",
+      "name": "IG: last 7 days",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        660,
+        300
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://graph.facebook.com/{{ $('Settings').first().json.graphVersion }}/{{ $json.id }}/insights",
+        "options": {},
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "facebookGraphApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "metric",
+              "value": "views,reach,shares,saved"
+            }
+          ]
+        }
+      },
+      "id": "590fc0e9-2432-5d20-9504-77cec82f7ddc",
+      "name": "IG: views per post",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        880,
+        300
+      ],
+      "credentials": {
+        "facebookGraphApi": {
+          "id": "",
+          "name": "Facebook Graph account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const posts = $('IG: last 7 days').all().map(i => i.json);\nif (posts[0]?.none) return [{ json: { platform: 'instagram', none: true } }];\nconst ins = $input.all().map(i => i.json);\nreturn posts.map((p, i) => {\n  const m = Object.fromEntries(((ins[i] || {}).data || []).map(d => [d.name, (d.values || [{}])[0].value ?? d.total_value?.value]));\n  return { json: { platform: 'instagram', title: String(p.caption || '').split('\\n')[0].slice(0, 80), link: p.permalink,\n    posted_at: p.timestamp, views: m.views ?? null, likes: p.like_count ?? 0, comments: p.comments_count ?? 0, shares: m.shares ?? 0 } };\n});"
+      },
+      "id": "05f7d6f1-0396-55b1-b4a3-ba276cc38692",
+      "name": "IG: rows",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1100,
+        300
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://graph.facebook.com/{{ $('Settings').first().json.graphVersion }}/{{ $('Settings').first().json.facebookPageId }}/posts",
+        "options": {},
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "facebookGraphApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "fields",
+              "value": "id,permalink_url,created_time,message,shares,reactions.summary(total_count).limit(0),comments.summary(true).limit(0)"
+            },
+            {
+              "name": "since",
+              "value": "={{ Math.floor(Date.now() / 1000) - $('Settings').first().json.days * 86400 }}"
+            },
+            {
+              "name": "limit",
+              "value": "25"
+            }
+          ]
+        }
+      },
+      "id": "80b12766-b55e-530d-94b0-9ec9814ff422",
+      "name": "FB: recent posts",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1320,
+        300
+      ],
+      "credentials": {
+        "facebookGraphApi": {
+          "id": "",
+          "name": "Facebook Graph account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const posts = $input.first().json.data || [];\nif (!posts.length) return [{ json: { platform: 'facebook', none: true } }];\nreturn posts.map(p => ({ json: { platform: 'facebook', title: String(p.message || '').split('\\n')[0].slice(0, 80), link: p.permalink_url,\n  posted_at: p.created_time, views: null, likes: p.reactions?.summary?.total_count ?? 0, comments: p.comments?.summary?.total_count ?? 0,\n  shares: p.shares?.count ?? 0 } }));"
+      },
+      "id": "893cf59d-5333-5ada-8133-3d12f176a557",
+      "name": "FB: rows",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1540,
+        300
+      ],
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://www.googleapis.com/youtube/v3/channels",
+        "options": {},
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "youTubeOAuth2Api",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "part",
+              "value": "contentDetails"
+            },
+            {
+              "name": "mine",
+              "value": "true"
+            }
+          ]
+        }
+      },
+      "id": "48c83640-80ea-5fe0-aacc-f03e3ff8876c",
+      "name": "YT: my uploads list",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1760,
+        300
+      ],
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "",
+          "name": "YouTube account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://www.googleapis.com/youtube/v3/playlistItems",
+        "options": {},
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "youTubeOAuth2Api",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "part",
+              "value": "contentDetails"
+            },
+            {
+              "name": "maxResults",
+              "value": "25"
+            },
+            {
+              "name": "playlistId",
+              "value": "={{ ($json.items || [])[0]?.contentDetails?.relatedPlaylists?.uploads }}"
+            }
+          ]
+        }
+      },
+      "id": "e18e2ad7-5332-5d63-b871-95df0544ef5d",
+      "name": "YT: latest uploads",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1980,
+        300
+      ],
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "",
+          "name": "YouTube account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://www.googleapis.com/youtube/v3/videos",
+        "options": {},
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "youTubeOAuth2Api",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "part",
+              "value": "snippet,statistics"
+            },
+            {
+              "name": "id",
+              "value": "={{ ($json.items || []).map(i => i.contentDetails.videoId).join(',') }}"
+            }
+          ]
+        }
+      },
+      "id": "66284777-edf4-54aa-9489-348a56bc293c",
+      "name": "YT: video stats",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2200,
+        300
+      ],
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "",
+          "name": "YouTube account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const days = $('Settings').first().json.days, cutoff = DateTime.now().minus({ days });\nconst vids = ($input.first().json.items || []).filter(v => DateTime.fromISO(v.snippet.publishedAt) >= cutoff);\nif (!vids.length) return [{ json: { platform: 'youtube', none: true } }];\nreturn vids.map(v => ({ json: { platform: 'youtube', title: v.snippet.title, link: 'https://youtube.com/shorts/' + v.id, posted_at: v.snippet.publishedAt,\n  views: Number(v.statistics.viewCount || 0), likes: Number(v.statistics.likeCount || 0), comments: Number(v.statistics.commentCount || 0), shares: 0 } }));"
+      },
+      "id": "71cc5b84-305d-5742-8ef4-ff0a075b6d97",
+      "name": "YT: rows",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2420,
+        300
+      ],
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "operation": "read",
+        "documentId": {
+          "__rl": true,
+          "mode": "url",
+          "value": "PASTE_GOOGLE_SHEET_URL"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Leads"
+        },
+        "options": {}
+      },
+      "id": "9aa90e37-a3f8-52c8-88f4-286dfc4d42e9",
+      "name": "Read Leads",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2640,
+        300
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "",
+          "name": "Google Sheets account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const st = $('Settings').first().json, tz = 'Europe/London';\nconst now = DateTime.now().setZone(tz), cutoff = now.minus({ days: st.days });\nconst rows = ['IG: rows', 'FB: rows', 'YT: rows'].flatMap(n => $(n).all().map(i => i.json)).filter(r => !r.none && r.link);\nconst leads = $input.all().map(i => i.json).filter(l => l.created_at && DateTime.fromFormat(String(l.created_at), 'yyyy-MM-dd HH:mm', { zone: tz }) >= cutoff);\nconst e = t => String(t ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');\nconst n = x => Number(x || 0).toLocaleString('en-GB');\nconst label = { youtube: 'YouTube', instagram: 'Instagram', facebook: 'Facebook' };\nconst icon = { youtube: '▶️', instagram: '📸', facebook: '👍', 'guide-form': '📘', 'audit-form': '📅' };\nconst plat = {};\nfor (const r of rows) { const p = plat[r.platform] ||= { posts: 0, views: 0, hasViews: false, likes: 0, comments: 0, shares: 0 };\n  p.posts++; if (r.views != null) { p.views += r.views; p.hasViews = true; } p.likes += r.likes; p.comments += r.comments; p.shares += r.shares; }\nconst score = r => (r.views ?? 0) + 5 * (r.likes + r.comments * 2 + r.shares * 3);\nconst ranked = [...rows].sort((a, b) => score(b) - score(a));\nconst bySource = {}; for (const l of leads) bySource[l.source] = (bySource[l.source] || 0) + 1;\nconst lines = [`📊 <b>The AI Pound: weekly report</b>`, `${cutoff.toFormat('d LLL')} – ${now.toFormat('d LLL yyyy')}`, ''];\nif (!rows.length) lines.push('No posts in the last 7 days.');\nfor (const [k, p] of Object.entries(plat))\n  lines.push(`${icon[k]} <b>${label[k] || k}</b>: ${p.posts} post${p.posts > 1 ? 's' : ''} · ${p.hasViews ? n(p.views) + ' views · ' : ''}${n(p.likes)} likes · ${n(p.comments)} comments${p.shares ? ' · ' + n(p.shares) + ' shares' : ''}`);\nlines.push('', `🎯 <b>Leads: ${leads.length}</b>` + (leads.length ? ' (' + Object.entries(bySource).map(([s, c]) => `${icon[s] || ''} ${s} ${c}`).join(', ') + ')' : ''));\nconst audits = bySource['audit-form'] || 0; if (audits) lines.push(`📅 ${audits} audit request${audits > 1 ? 's' : ''}: follow up today`);\nif (ranked.length) {\n  const b = ranked[0], w = ranked[ranked.length - 1];\n  lines.push('', `🏆 <b>Best</b>: ${e(b.title)} (${b.platform}${b.views != null ? ', ' + n(b.views) + ' views' : ''}, ${n(b.likes)} likes)\\n${e(b.link)}`);\n  if (ranked.length > 1) lines.push(`🔻 <b>Lowest</b>: ${e(w.title)} (${w.platform}${w.views != null ? ', ' + n(w.views) + ' views' : ''})`);\n}\n// one suggestion\nlet tip = 'Keep posting consistently: one Short a day builds the data you need.';\nconst top = Object.entries(plat).sort((a, b) => (b[1].views || b[1].likes * 20) - (a[1].views || a[1].likes * 20))[0];\nif (ranked.length > 1) tip = `Make another video like \"${ranked[0].title.slice(0, 50)}\": it beat your average this week.`;\nif (rows.length && leads.length === 0) tip = 'No leads this week: make sure every video ends with \"Comment AUTOMATE\" and pin that comment.';\nif (top && rows.length) tip += ` ${label[top[0]] || top[0]} was your strongest platform.`;\nlines.push('', `💡 ${e(tip)}`, '', '<i>TikTok stats aren\\'t available via its API: check them in the TikTok app.</i>');\nconst week = cutoff.toFormat('yyyy-MM-dd');\nconst stats = rows.map(r => ({ week_start: week, platform: r.platform, title: r.title, link: r.link, posted_at: r.posted_at,\n  views: r.views ?? '', likes: r.likes, comments: r.comments, shares: r.shares }));\nstats.push({ week_start: week, platform: 'leads', title: 'Leads this week', link: '', posted_at: '', views: '', likes: '', comments: '', shares: '', leads: leads.length });\nreturn [{ json: { text: lines.join('\\n').slice(0, 3900), stats } }];"
+      },
+      "id": "d292ae7d-579e-5ff7-b468-d5f0ebab729a",
+      "name": "Build report",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2860,
+        300
+      ],
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Settings').first().json.telegramChatId }}",
+        "text": "={{ $json.text }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML",
+          "disable_web_page_preview": true
+        }
+      },
+      "id": "b2ae2789-18a2-58f9-9f25-572b880ab590",
+      "name": "Telegram: weekly report",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        3080,
+        300
+      ],
+      "credentials": {
+        "telegramApi": {
+          "id": "",
+          "name": "Telegram bot"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "return $('Build report').first().json.stats.map(s => ({ json: s }));"
+      },
+      "id": "b468a264-9a1c-5a0c-92af-e8b8aaf916b8",
+      "name": "Stats rows",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3300,
+        300
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "url",
+          "value": "PASTE_GOOGLE_SHEET_URL"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Stats"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": []
+        },
+        "options": {}
+      },
+      "id": "dd693ad3-8b61-5581-b169-0c47c0ec84f3",
+      "name": "Save to Stats tab",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        3520,
+        300
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "",
+          "name": "Google Sheets account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    }
+  ],
+  "connections": {
+    "Every Monday 08:38": {
+      "main": [
+        [
+          {
+            "node": "Settings",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Settings": {
+      "main": [
+        [
+          {
+            "node": "IG: recent posts",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "IG: recent posts": {
+      "main": [
+        [
+          {
+            "node": "IG: last 7 days",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "IG: last 7 days": {
+      "main": [
+        [
+          {
+            "node": "IG: views per post",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "IG: views per post": {
+      "main": [
+        [
+          {
+            "node": "IG: rows",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "IG: rows": {
+      "main": [
+        [
+          {
+            "node": "FB: recent posts",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "FB: recent posts": {
+      "main": [
+        [
+          {
+            "node": "FB: rows",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "FB: rows": {
+      "main": [
+        [
+          {
+            "node": "YT: my uploads list",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "YT: my uploads list": {
+      "main": [
+        [
+          {
+            "node": "YT: latest uploads",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "YT: latest uploads": {
+      "main": [
+        [
+          {
+            "node": "YT: video stats",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "YT: video stats": {
+      "main": [
+        [
+          {
+            "node": "YT: rows",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "YT: rows": {
+      "main": [
+        [
+          {
+            "node": "Read Leads",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Read Leads": {
+      "main": [
+        [
+          {
+            "node": "Build report",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Build report": {
+      "main": [
+        [
+          {
+            "node": "Telegram: weekly report",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Telegram: weekly report": {
+      "main": [
+        [
+          {
+            "node": "Stats rows",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Stats rows": {
+      "main": [
+        [
+          {
+            "node": "Save to Stats tab",
+            "index": 0,
+            "type": "main"
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Europe/London"
+  },
+  "pinData": {}
+}
