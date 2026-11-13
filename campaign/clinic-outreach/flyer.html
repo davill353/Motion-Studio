@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<title>The AI Pound — clinic pilot flyer</title>
+<style>
+  @page { size: A4 landscape; margin: 0; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 297mm; height: 210mm; }
+  body {
+    font-family: "Liberation Sans", Arial, sans-serif;
+    color: #16233B;
+    background: #fff;
+    display: flex;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .sheet { width: 148.5mm; height: 210mm; padding: 11mm 11mm 9mm; display: flex; flex-direction: column; position: relative; }
+  .cut { width: 0; border-left: 0.3mm dashed #c9d1dd; height: 100%; }
+
+  .top { display: flex; justify-content: space-between; align-items: baseline; }
+  .brand { font-size: 13pt; font-weight: 700; letter-spacing: -0.2pt; }
+  .brand span { color: #1D9A82; }
+  .area { font-size: 7.6pt; letter-spacing: 1.1pt; text-transform: uppercase; color: #5B6B85; }
+
+  .eyebrow { margin-top: 7mm; font-size: 7.6pt; letter-spacing: 2pt; text-transform: uppercase; color: #1D9A82; font-weight: 700; }
+  .rule { height: 0.6mm; background: #6EE7A8; width: 14mm; margin-top: 1.6mm; }
+
+  h1 { margin-top: 5mm; font-size: 20.5pt; line-height: 1.16; letter-spacing: -0.3pt; font-weight: 700; }
+  h1 .hi { color: #1D9A82; }
+
+  .lede { margin-top: 3.6mm; font-size: 9.6pt; line-height: 1.45; color: #2B3B55; }
+
+  ul { margin-top: 4mm; list-style: none; }
+  ul li { position: relative; padding-left: 5.2mm; margin-bottom: 2.1mm; font-size: 9.2pt; line-height: 1.35; color: #2B3B55; }
+  ul li:before { content: ""; position: absolute; left: 0; top: 1.5mm; width: 3mm; height: 3mm; border-radius: 50%; background: #6EE7A8; }
+
+  .steps { display: flex; gap: 3mm; margin-top: 5.5mm; }
+  .step { flex: 1; border-top: 0.8mm solid #16233B; padding-top: 2.2mm; }
+  .step .when { font-size: 8pt; font-weight: 700; letter-spacing: 0.7pt; text-transform: uppercase; color: #16233B; }
+  .step .what { margin-top: 1.2mm; font-size: 8.2pt; line-height: 1.32; color: #2B3B55; }
+
+  .after { margin-top: 4.6mm; font-size: 8.6pt; color: #2B3B55; }
+  .after b { color: #16233B; }
+
+  .cta { margin-top: auto; background: #16233B; color: #fff; border-radius: 2.2mm; padding: 5.5mm 6mm; display: flex; align-items: center; justify-content: space-between; gap: 5mm; }
+  .cta h2 { font-size: 15pt; letter-spacing: -0.2pt; }
+  .cta h2 em { font-style: normal; color: #6EE7A8; }
+  .cta p { margin-top: 2mm; font-size: 8.4pt; line-height: 1.4; color: #d7dfea; }
+  .qrbox { background: #fff; border-radius: 1.6mm; padding: 2mm; width: 27mm; flex: 0 0 27mm; text-align: center; }
+  .qrbox img { width: 23mm; height: 23mm; display: block; margin: 0 auto; }
+  .qrbox .cap { margin-top: 0.8mm; font-size: 5.6pt; letter-spacing: 0.5pt; text-transform: uppercase; color: #16233B; font-weight: 700; }
+
+  .foot { margin-top: 4.5mm; font-size: 7.4pt; color: #5B6B85; line-height: 1.5; }
+  .foot b { color: #16233B; }
+</style>
+</head>
+<body>
+  <section class="sheet">
+    <div class="top">
+      <div class="brand">The AI <span>Pound</span></div>
+      <div class="area">Beds &middot; Herts &middot; Bucks</div>
+    </div>
+
+    <div class="eyebrow">For clinics &amp; salons</div>
+    <div class="rule"></div>
+
+    <h1>Your team answers the same <span class="hi">12 questions</span> every day.</h1>
+    <p class="lede">Prices, aftercare, availability, patch tests. An AI assistant can answer them on WhatsApp, in your words, so your team stops typing the same reply between clients.</p>
+
+    <ul>
+      <li>Answers from your own price list: it can&rsquo;t invent an offer you don&rsquo;t run.</li>
+      <li>Stops at anything clinical and sends it to your team.</li>
+      <li>You approve every reply until you trust it.</li>
+    </ul>
+
+    <div class="steps">
+      <div class="step">
+        <div class="when">Day 1</div>
+        <div class="what">45-minute setup: your treatments, prices and rules go into a simple sheet.</div>
+      </div>
+      <div class="step">
+        <div class="when">Week 1</div>
+        <div class="what">It drafts every reply; your team approves with one tap.</div>
+      </div>
+      <div class="step">
+        <div class="when">Day 14</div>
+        <div class="what">See the hours it saved. Keep it, or I switch it off.</div>
+      </div>
+    </div>
+
+    <p class="after">After the pilot: <b>&pound;200 setup + &pound;50 a month</b>, month to month. Cancel any time.</p>
+
+    <div class="cta">
+      <div>
+        <h2>Free <em>2-week</em> pilot</h2>
+        <p>No card. No contract. I set it up with you in 45 minutes. Keep it only if it saves you time.</p>
+      </div>
+      <div class="qrbox">
+        <img src="qr_new.png" alt="QR code to the pilot page">
+        <div class="cap">Scan for details</div>
+      </div>
+    </div>
+
+    <div class="foot"><b>David</b> &middot; WhatsApp 07984 692252 &middot; david@theaipound.co.uk &middot; theaipound.co.uk/pilot</div>
+  </section>
+
+  <div class="cut"></div>
+
+  <section class="sheet">
+    <div class="top">
+      <div class="brand">The AI <span>Pound</span></div>
+      <div class="area">Beds &middot; Herts &middot; Bucks</div>
+    </div>
+
+    <div class="eyebrow">For clinics &amp; salons</div>
+    <div class="rule"></div>
+
+    <h1>Your team answers the same <span class="hi">12 questions</span> every day.</h1>
+    <p class="lede">Prices, aftercare, availability, patch tests. An AI assistant can answer them on WhatsApp, in your words, so your team stops typing the same reply between clients.</p>
+
+    <ul>
+      <li>Answers from your own price list: it can&rsquo;t invent an offer you don&rsquo;t run.</li>
+      <li>Stops at anything clinical and sends it to your team.</li>
+      <li>You approve every reply until you trust it.</li>
+    </ul>
+
+    <div class="steps">
+      <div class="step">
+        <div class="when">Day 1</div>
+        <div class="what">45-minute setup: your treatments, prices and rules go into a simple sheet.</div>
+      </div>
+      <div class="step">
+        <div class="when">Week 1</div>
+        <div class="what">It drafts every reply; your team approves with one tap.</div>
+      </div>
+      <div class="step">
+        <div class="when">Day 14</div>
+        <div class="what">See the hours it saved. Keep it, or I switch it off.</div>
+      </div>
+    </div>
+
+    <p class="after">After the pilot: <b>&pound;200 setup + &pound;50 a month</b>, month to month. Cancel any time.</p>
+
+    <div class="cta">
+      <div>
+        <h2>Free <em>2-week</em> pilot</h2>
+        <p>No card. No contract. I set it up with you in 45 minutes. Keep it only if it saves you time.</p>
+      </div>
+      <div class="qrbox">
+        <img src="qr_new.png" alt="QR code to the pilot page">
+        <div class="cap">Scan for details</div>
+      </div>
+    </div>
+
+    <div class="foot"><b>David</b> &middot; WhatsApp 07984 692252 &middot; david@theaipound.co.uk &middot; theaipound.co.uk/pilot</div>
+  </section>
+</body>
+</html>
