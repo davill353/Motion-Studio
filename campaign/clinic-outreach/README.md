@@ -8,6 +8,7 @@ The campaign pack for The AI Pound's local clinic and salon outreach.
 | `content-calendar-30-day-plan.csv` | The same 30 posts as calendar rows (no header row, 17 columns). All `draft`; imported to the `content-calendar-template` tab |
 | `prospects-pipeline.csv` | 765 clinics and salons across 14 towns, scored A/B/C, with a first line each. Imported to the `Prospects` tab |
 | `route-sheets.pdf` | Printable drive sheets, six days, top 20 independents per day |
+| `flyer-clinic-pilot-A4-2up.pdf` | Leave-behind flyer, A4 with two copies per sheet (cut down the middle). QR goes to `theaipound.co.uk/pilot/?utm_source=flyer` |
 
 ## Rules the plan runs on
 
