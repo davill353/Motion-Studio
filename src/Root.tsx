@@ -6,6 +6,7 @@ import { makeReel } from "./pound/Reel";
 import { poundReels } from "./pound/reels";
 import { TOTAL } from "./pound/theme";
 import { CaseStudy01 } from "./casestudy/CaseStudy";
+import { END_SECONDS, TalkingHead, talkingDefaults, TalkingProps } from "./talking/TalkingHead";
 import { makeVoicedReel, MUSIC_ON, voiced } from "./pound/Voiced";
 
 const poundComps = poundReels.map((d) => ({ id: d.id, component: makeReel(d) }));
@@ -48,6 +49,16 @@ export const RemotionRoot: React.FC = () => {
           <Composition key={r.id} id={r.id} component={r.component} durationInFrames={r.total} fps={30} width={1080} height={1920} />
         ))}
       </Folder>
+      <Composition
+        id="TalkingHead"
+        component={TalkingHead}
+        fps={30}
+        width={1080}
+        height={1920}
+        durationInFrames={150}
+        defaultProps={talkingDefaults}
+        calculateMetadata={({ props }: { props: TalkingProps }) => ({ durationInFrames: Math.round((props.videoSeconds + END_SECONDS) * 30) })}
+      />
       <Folder name="Case-Studies">
         <Composition id="CaseStudy01-Vertical" component={CaseStudy01} durationInFrames={750} fps={30} width={1080} height={1920} />
         <Composition id="CaseStudy01-Square" component={CaseStudy01} durationInFrames={750} fps={30} width={1080} height={1080} />
