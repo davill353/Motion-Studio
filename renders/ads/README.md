@@ -14,3 +14,9 @@ Swap `s1.png` and `s2.png` for real footage stills (or film clips and cut them t
 ## Claims in this cut
 
 Free two-week pilot, no card, 45-minute setup, approval on every reply, prices from the owner's own sheet, clinical questions routed to a person. Nothing here needs a claim audit: no prices promised, no results promised, no comparison to a named competitor.
+
+## Re-cuts
+
+| File | What it is |
+| --- | --- |
+| `../ai-pound-shorts-vo/03-Restaurant-Part1-RECUT-25s.mp4` | 25.6s re-cut of the restaurant demo. Same voiceover lines, new opening on the £10.90 order, five cards plus a follow card. Built by `scripts/build_recut_restaurant.py` |
