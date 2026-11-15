@@ -10,6 +10,7 @@ export type TalkingProps = {
   keywords: string[];     // words highlighted in mint
   endTitle: string;       // e.g. "Follow for Day 1"
   videoSeconds: number;
+  label?: string;         // e.g. "AI voiceover"
 };
 export const END_SECONDS = 2.5;
 export const talkingDefaults: TalkingProps = { video: "", words: [], hook: "", keywords: [], endTitle: "Follow for more", videoSeconds: 5 };
@@ -72,10 +73,11 @@ const Hook: React.FC<{ text: string }> = ({ text }) => {
   );
 };
 
-const Bug: React.FC = () => (
+const Bug: React.FC<{ label?: string }> = ({ label }) => (
   <div style={{ position: "absolute", top: 200, left: 60, display: "flex", alignItems: "center", gap: 14, background: "rgba(22,35,59,0.72)", padding: "10px 18px 10px 10px", borderRadius: 999 }}>
     <Img src={staticFile(P.logo)} style={{ width: 52, height: 52, borderRadius: 12 }} />
     <span style={{ color: "#fff", fontFamily: P.font, fontWeight: 800, fontSize: 28 }}>The AI Pound</span>
+    {label && <span style={{ color: "rgba(255,255,255,0.75)", fontFamily: P.font, fontWeight: 700, fontSize: 20, letterSpacing: 2, textTransform: "uppercase", marginLeft: 6 }}>· {label}</span>}
   </div>
 );
 
@@ -92,7 +94,7 @@ const EndCard: React.FC<{ title: string }> = ({ title }) => {
   );
 };
 
-export const TalkingHead: React.FC<TalkingProps> = ({ video, words, hook, keywords, endTitle, videoSeconds }) => {
+export const TalkingHead: React.FC<TalkingProps> = ({ video, words, hook, keywords, endTitle, videoSeconds, label }) => {
   const { fps } = useVideoConfig();
   const vf = Math.round(videoSeconds * fps);
   return (
@@ -100,7 +102,7 @@ export const TalkingHead: React.FC<TalkingProps> = ({ video, words, hook, keywor
       {video && <Sequence durationInFrames={vf}><OffthreadVideo src={staticFile(video)} style={{ width: "100%", height: "100%", objectFit: "cover" }} /></Sequence>}
       <Sequence durationInFrames={vf}>
         <AbsoluteFill style={{ background: "linear-gradient(180deg, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0) 25%, rgba(0,0,0,0) 50%, rgba(0,0,0,0.35) 100%)" }} />
-        <Bug /><Hook text={hook} /><Captions words={words} keywords={keywords} />
+        <Bug label={label} /><Hook text={hook} /><Captions words={words} keywords={keywords} />
       </Sequence>
       <Sequence from={vf}><EndCard title={endTitle} /></Sequence>
     </AbsoluteFill>

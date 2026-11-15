@@ -8,6 +8,7 @@ ap.add_argument("src"); ap.add_argument("id"); ap.add_argument("hook")
 ap.add_argument("--end", default="Follow for more")
 ap.add_argument("--keywords", default="AI,free,clinic,clinics,Bedfordshire,salon,salons,WhatsApp,Sandy,Bedford")
 ap.add_argument("--no-trim", action="store_true")
+ap.add_argument("--label", default="", help='small label next to the logo, e.g. "AI voiceover"')
 a = ap.parse_args()
 def run(*c, **kw): return subprocess.run(c, check=True, capture_output=True, text=True, **kw)
 def dur(p): return float(run("ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", str(p)).stdout)
@@ -42,7 +43,7 @@ words = [{"text": uk(w["text"].strip()), "start": round(w["start"], 3), "end": r
 (ROOT / "public" / "talking" / f"{a.id}.words.json").write_text(json.dumps({"text": data.get("text", ""), "words": words}, indent=1))
 # 4. render
 props = {"video": f"talking/{a.id}.mp4", "words": words, "hook": a.hook, "keywords": [k.strip() for k in a.keywords.split(",") if k.strip()],
-         "endTitle": a.end, "videoSeconds": round(secs, 3)}
+         "endTitle": a.end, "videoSeconds": round(secs, 3), "label": a.label}
 pf = ROOT / "public" / "talking" / f"{a.id}.props.json"; pf.write_text(json.dumps(props))
 raw = ROOT / "renders" / "plan" / f"{a.id}.raw.mp4"; raw.parent.mkdir(parents=True, exist_ok=True)
 br = ["--browser-executable=/opt/pw-browsers/chromium"] if pathlib.Path("/opt/pw-browsers/chromium").exists() else []
