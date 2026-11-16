@@ -1,0 +1,144 @@
+[
+  {
+    "name": "receptionist-instagram (19s showcase)",
+    "video": "renders/platform/receptionist-instagram.mp4",
+    "type": "channel",
+    "search_phrase": "ai receptionist",
+    "duration_range": [
+      12,
+      60
+    ],
+    "title": "AI receptionist for clinics: built in one evening",
+    "captions": {
+      "caption_instagram": "AI receptionist for clinics, built in n8n in one evening. It answers the phone, prices from a sheet the code computes, and stops dead on anything clinical. Every reply waits for your team to approve it. Two weeks free, no card. theaipound.co.uk/pilot #AIforClinics #AIReceptionist #AestheticsClinic #SmallBusinessAI #n8n",
+      "caption_tiktok": "AI receptionist for clinics, built in one evening. Prices come from a sheet, not the model. Clinical questions stop at a gate. theaipound.co.uk/pilot #AIforClinics #AIReceptionist #SmallBusinessAI #n8n #AestheticsClinic"
+    },
+    "script": "This is an AI receptionist for a clinic built in n8n. It answers, prices from a spreadsheet and stops dead on anything clinical. Every reply waits for a person to approve it. That is the whole difference. Two weeks free, link in bio."
+  },
+  {
+    "name": "receptionist-tiktok (fast-cut hook)",
+    "video": "renders/platform/receptionist-tiktok.mp4",
+    "type": "channel",
+    "search_phrase": "ai receptionist",
+    "duration_range": [
+      12,
+      60
+    ],
+    "title": "Would you let an AI answer your clinic phone?",
+    "captions": {
+      "caption_tiktok": "I built a clinic an AI receptionist in one evening. It answers, prices from a sheet, and stops dead on anything clinical. Every reply waits for a human. Would you let this answer your phone? Tell me why not. #AIforClinics #AIReceptionist #SmallBusinessAI #n8n #BuildInPublic",
+      "caption_instagram": "I built a clinic an AI receptionist in one evening. Every reply waits for a human. Would you let this answer your phone? Two weeks free for clinics. #AIforClinics #AIReceptionist #AestheticsClinic"
+    },
+    "script": "I built a clinic an AI receptionist in one evening. It answers, prices from a sheet, and stops dead on anything clinical. Every reply waits for a human. Would you let this answer your phone? Tell me why not."
+  },
+  {
+    "name": "receptionist-shorts (search-led 35s)",
+    "video": "renders/platform/receptionist-shorts.mp4",
+    "type": "channel",
+    "search_phrase": "ai receptionist for clinics",
+    "duration_range": [
+      20,
+      60
+    ],
+    "title": "AI receptionist for clinics: how it actually works",
+    "captions": {
+      "caption_youtube": "AI receptionist for clinics, built in n8n. Prices come from a sheet and are computed in code, so the model never touches a number. Safety gates stop it on infection, pregnancy, Roaccutane and under-18s, then an approval card before any reply reaches a patient. Two weeks free for clinics: theaipound.co.uk/pilot",
+      "caption_instagram": "AI receptionist for clinics, built in n8n. The price comes from a sheet the code computes, clinical questions hit a gate, and an approval card holds every reply. Two weeks free: theaipound.co.uk/pilot #AIforClinics #AIReceptionist #AestheticsClinic #SmallBusinessAI"
+    },
+    "script": "AI receptionist for clinics. Built in n8n. The trigger takes the question and the agent reads it. The price comes from a sheet, computed in code, so the model never touches the number. Safety gates stop it on infection, pregnancy, Roaccutane and under-18s. Then an approval card. Two weeks free for clinics.",
+    "notes": [
+      "voiceover tail: brand domain comes out unintelligible (whisper hears '[unclear].co.uk/pilot'); on-screen URL saves it, but the spoken CTA needs re-recording"
+    ]
+  },
+  {
+    "name": "receptionist-facebook (4:5 phone-led)",
+    "video": "renders/platform/receptionist-facebook.mp4",
+    "type": "channel",
+    "search_phrase": "clinic phone",
+    "duration_range": [
+      12,
+      60
+    ],
+    "title": "Your clinic phone, answered properly",
+    "captions": {
+      "caption_facebook": "If you run a clinic, the phone is the whole business. Miss the call and they book somewhere else. This AI receptionist answers it, gives the treatment price, and every reply is checked by your team before it goes out. Two weeks free, no card, no contract, no lock in: theaipound.co.uk/pilot",
+      "caption_instagram": "Your clinic phone, answered properly. Every reply checked by your team before it goes out. Two weeks free: theaipound.co.uk/pilot #AIforClinics #AIReceptionist #AestheticsClinic"
+    },
+    "script": "If you run a clinic, the phone is the whole business. Miss the call and they book somewhere else. This answers it, gives the treatment price, and every reply is checked by your team before it goes out. Two weeks free. No card, no contract, no lock in."
+  },
+  {
+    "name": "receptionist-linkedin (1:1 the honest part)",
+    "video": "renders/platform/receptionist-linkedin.mp4",
+    "type": "channel",
+    "search_phrase": "ai receptionist",
+    "duration_range": [
+      12,
+      60
+    ],
+    "title": "The part of an AI receptionist nobody films",
+    "captions": {
+      "caption_linkedin": "Everyone films the happy path. The part that decides whether an AI receptionist survives a real clinic is what happens when it does not know the answer. Prices come from a sheet and are computed in code, so the model never touches a number. Anything clinical stops at a gate. Every reply sits in an approval card until a human clears it. Two weeks free for clinics, building in public: theaipound.co.uk/pilot"
+    },
+    "script": "Everyone films the happy path. Here's the part that decides whether an AI receptionist survives contact with a real clinic. Prices come from a sheet and are computed in code, so the model never touches a number. Anything clinical stops at a gate. Every reply sits in an approval card until a human clears it. Two weeks free for clinics."
+  },
+  {
+    "name": "skincare ad: no before and after (9:16)",
+    "video": "renders/ugc/skincare-no-before-after-9x16.mp4",
+    "type": "ugc",
+    "demo": true,
+    "duration_range": [
+      15,
+      30
+    ],
+    "title": "Skincare UGC ad demo: no before and after",
+    "captions": {
+      "caption_demo": "Example creative: skincare UGC ad, one of three in the \u00a3129 package. No before and after, because nobody can prove what your skin will do. Four ingredients, no fragrance, 30ml, \u00a319, and a return if it does not suit you. Scripted, voiced and captioned by The AI Pound. This is a demo for a fictional brand, not a real customer."
+    },
+    "script": "This ad has no before and after. Here's why. Because nobody can prove what your skin will look like. So here's what is provable: four ingredients, no fragrance, thirty mil, nineteen pounds. If it doesn't suit you, send it back. That's the whole pitch."
+  },
+  {
+    "name": "hair ad: the 3-minute rule (9:16)",
+    "video": "renders/ugc/hair-three-minute-rule-9x16.mp4",
+    "type": "ugc",
+    "demo": true,
+    "duration_range": [
+      12,
+      30
+    ],
+    "title": "Haircare UGC ad demo: the 3-minute rule",
+    "captions": {
+      "caption_demo": "Example creative: haircare UGC ad with an on-screen countdown. Three minutes of conditioner, not thirty seconds. Rinse cold, do not towel rough it. \u00a316 for 200ml. Scripted, voiced and captioned by The AI Pound. Demo for a fictional brand, not a real customer."
+    },
+    "script": "Three minutes. That's it. That's the whole trick. Most people rinse after thirty seconds, then wonder why their hair feels like straw. Rinse cold. Don't towel rough it. Sixteen pounds, two hundred mil."
+  },
+  {
+    "name": "skincare ad 4:5 feed crop",
+    "video": "renders/ugc/skincare-no-before-after-4x5.mp4",
+    "type": "ugc",
+    "demo": true,
+    "duration_range": [
+      15,
+      30
+    ],
+    "title": "Skincare UGC ad demo 4:5",
+    "captions": {
+      "caption_demo": "Example creative: the same skincare demo cropped for feed placements. Demo for a fictional brand, not a real customer."
+    },
+    "script": "This ad has no before and after. Here's why. Because nobody can prove what your skin will look like. So here's what is provable: four ingredients, no fragrance, thirty mil, nineteen pounds."
+  },
+  {
+    "name": "hair ad 4:5 feed crop",
+    "video": "renders/ugc/hair-three-minute-rule-4x5.mp4",
+    "type": "ugc",
+    "demo": true,
+    "duration_range": [
+      12,
+      30
+    ],
+    "title": "Haircare UGC ad demo 4:5",
+    "captions": {
+      "caption_demo": "Example creative: the haircare demo cropped for feed placements. Demo for a fictional brand, not a real customer."
+    },
+    "script": "Three minutes. That's it. That's the whole trick. Most people rinse after thirty seconds, then wonder why their hair feels like straw."
+  }
+]
