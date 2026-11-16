@@ -1,0 +1,570 @@
+{
+ "text": "Thirty minutes to build an AI receptionist for a clinic. Timer starts now. First, a webhook so every inquiry lands in my workflow the second a customer hits send. Next, the clinic's prices and opening times pulled live from Google Sheets. Now the brain. AI reads the message and decides, is this a booking, a medical question, or something else? Bookings go to the owner on Telegram. One tap to approve. Medical questions get flagged to a clinician. The AI never answers those. Time for the real test. I message it like a customer, and there's the reply in seconds. Built in twenty-seven minutes. Comment \"automate,\" and I'll send you the free guide.",
+ "words": [
+  {
+   "text": "Thirty",
+   "start": 0.06,
+   "end": 0.26
+  },
+  {
+   "text": "minutes",
+   "start": 0.34,
+   "end": 0.64
+  },
+  {
+   "text": "to",
+   "start": 0.68,
+   "end": 0.8
+  },
+  {
+   "text": "build",
+   "start": 0.82,
+   "end": 1.04
+  },
+  {
+   "text": "an",
+   "start": 1.08,
+   "end": 1.26
+  },
+  {
+   "text": "AI",
+   "start": 1.34,
+   "end": 1.62
+  },
+  {
+   "text": "receptionist",
+   "start": 1.66,
+   "end": 2.4
+  },
+  {
+   "text": "for",
+   "start": 2.44,
+   "end": 2.52
+  },
+  {
+   "text": "a",
+   "start": 2.56,
+   "end": 2.58
+  },
+  {
+   "text": "clinic.",
+   "start": 2.66,
+   "end": 2.96
+  },
+  {
+   "text": "Timer",
+   "start": 3.06,
+   "end": 3.3
+  },
+  {
+   "text": "starts",
+   "start": 3.44,
+   "end": 3.74
+  },
+  {
+   "text": "now.",
+   "start": 3.8,
+   "end": 4.0
+  },
+  {
+   "text": "First,",
+   "start": 4.58,
+   "end": 4.84
+  },
+  {
+   "text": "a",
+   "start": 4.96,
+   "end": 4.98
+  },
+  {
+   "text": "webhook",
+   "start": 5.08,
+   "end": 5.46
+  },
+  {
+   "text": "so",
+   "start": 5.54,
+   "end": 5.66
+  },
+  {
+   "text": "every",
+   "start": 5.72,
+   "end": 5.94
+  },
+  {
+   "text": "inquiry",
+   "start": 5.98,
+   "end": 6.54
+  },
+  {
+   "text": "lands",
+   "start": 6.7,
+   "end": 7.02
+  },
+  {
+   "text": "in",
+   "start": 7.06,
+   "end": 7.14
+  },
+  {
+   "text": "my",
+   "start": 7.18,
+   "end": 7.32
+  },
+  {
+   "text": "workflow",
+   "start": 7.38,
+   "end": 7.9
+  },
+  {
+   "text": "the",
+   "start": 8.32,
+   "end": 8.42
+  },
+  {
+   "text": "second",
+   "start": 8.48,
+   "end": 8.82
+  },
+  {
+   "text": "a",
+   "start": 8.86,
+   "end": 8.94
+  },
+  {
+   "text": "customer",
+   "start": 8.98,
+   "end": 9.36
+  },
+  {
+   "text": "hits",
+   "start": 9.4,
+   "end": 9.62
+  },
+  {
+   "text": "send.",
+   "start": 9.7,
+   "end": 10.0
+  },
+  {
+   "text": "Next,",
+   "start": 10.48,
+   "end": 10.68
+  },
+  {
+   "text": "the",
+   "start": 10.78,
+   "end": 10.88
+  },
+  {
+   "text": "clinic's",
+   "start": 10.9,
+   "end": 11.28
+  },
+  {
+   "text": "prices",
+   "start": 11.38,
+   "end": 11.94
+  },
+  {
+   "text": "and",
+   "start": 11.98,
+   "end": 12.08
+  },
+  {
+   "text": "opening",
+   "start": 12.2,
+   "end": 12.5
+  },
+  {
+   "text": "times",
+   "start": 12.6,
+   "end": 12.92
+  },
+  {
+   "text": "pulled",
+   "start": 13.06,
+   "end": 13.3
+  },
+  {
+   "text": "live",
+   "start": 13.4,
+   "end": 13.76
+  },
+  {
+   "text": "from",
+   "start": 13.8,
+   "end": 14.0
+  },
+  {
+   "text": "Google",
+   "start": 14.04,
+   "end": 14.26
+  },
+  {
+   "text": "Sheets.",
+   "start": 14.36,
+   "end": 14.68
+  },
+  {
+   "text": "Now",
+   "start": 15.18,
+   "end": 15.36
+  },
+  {
+   "text": "the",
+   "start": 15.4,
+   "end": 15.5
+  },
+  {
+   "text": "brain.",
+   "start": 15.54,
+   "end": 15.88
+  },
+  {
+   "text": "AI",
+   "start": 16.3,
+   "end": 16.72
+  },
+  {
+   "text": "reads",
+   "start": 16.78,
+   "end": 17.0
+  },
+  {
+   "text": "the",
+   "start": 17.04,
+   "end": 17.12
+  },
+  {
+   "text": "message",
+   "start": 17.18,
+   "end": 17.6
+  },
+  {
+   "text": "and",
+   "start": 17.74,
+   "end": 17.84
+  },
+  {
+   "text": "decides,",
+   "start": 17.9,
+   "end": 18.48
+  },
+  {
+   "text": "is",
+   "start": 18.92,
+   "end": 19.02
+  },
+  {
+   "text": "this",
+   "start": 19.06,
+   "end": 19.2
+  },
+  {
+   "text": "a",
+   "start": 19.24,
+   "end": 19.32
+  },
+  {
+   "text": "booking,",
+   "start": 19.34,
+   "end": 19.62
+  },
+  {
+   "text": "a",
+   "start": 19.78,
+   "end": 19.84
+  },
+  {
+   "text": "medical",
+   "start": 19.88,
+   "end": 20.2
+  },
+  {
+   "text": "question,",
+   "start": 20.3,
+   "end": 20.66
+  },
+  {
+   "text": "or",
+   "start": 20.76,
+   "end": 20.82
+  },
+  {
+   "text": "something",
+   "start": 20.9,
+   "end": 21.2
+  },
+  {
+   "text": "else?",
+   "start": 21.24,
+   "end": 21.48
+  },
+  {
+   "text": "Bookings",
+   "start": 21.96,
+   "end": 22.34
+  },
+  {
+   "text": "go",
+   "start": 22.36,
+   "end": 22.52
+  },
+  {
+   "text": "to",
+   "start": 22.54,
+   "end": 22.62
+  },
+  {
+   "text": "the",
+   "start": 22.66,
+   "end": 22.74
+  },
+  {
+   "text": "owner",
+   "start": 22.78,
+   "end": 23.04
+  },
+  {
+   "text": "on",
+   "start": 23.08,
+   "end": 23.2
+  },
+  {
+   "text": "Telegram.",
+   "start": 23.24,
+   "end": 23.7
+  },
+  {
+   "text": "One",
+   "start": 23.9,
+   "end": 24.06
+  },
+  {
+   "text": "tap",
+   "start": 24.18,
+   "end": 24.4
+  },
+  {
+   "text": "to",
+   "start": 24.46,
+   "end": 24.58
+  },
+  {
+   "text": "approve.",
+   "start": 24.64,
+   "end": 25.08
+  },
+  {
+   "text": "Medical",
+   "start": 25.64,
+   "end": 25.94
+  },
+  {
+   "text": "questions",
+   "start": 26.04,
+   "end": 26.58
+  },
+  {
+   "text": "get",
+   "start": 26.9,
+   "end": 27.04
+  },
+  {
+   "text": "flagged",
+   "start": 27.16,
+   "end": 27.44
+  },
+  {
+   "text": "to",
+   "start": 27.48,
+   "end": 27.58
+  },
+  {
+   "text": "a",
+   "start": 27.62,
+   "end": 27.68
+  },
+  {
+   "text": "clinician.",
+   "start": 27.72,
+   "end": 28.22
+  },
+  {
+   "text": "The",
+   "start": 28.7,
+   "end": 28.8
+  },
+  {
+   "text": "AI",
+   "start": 28.86,
+   "end": 29.14
+  },
+  {
+   "text": "never",
+   "start": 29.2,
+   "end": 29.44
+  },
+  {
+   "text": "answers",
+   "start": 29.5,
+   "end": 29.84
+  },
+  {
+   "text": "those.",
+   "start": 29.9,
+   "end": 30.22
+  },
+  {
+   "text": "Time",
+   "start": 30.44,
+   "end": 30.7
+  },
+  {
+   "text": "for",
+   "start": 30.84,
+   "end": 30.94
+  },
+  {
+   "text": "the",
+   "start": 30.98,
+   "end": 31.02
+  },
+  {
+   "text": "real",
+   "start": 31.08,
+   "end": 31.24
+  },
+  {
+   "text": "test.",
+   "start": 31.34,
+   "end": 31.6
+  },
+  {
+   "text": "I",
+   "start": 32.06,
+   "end": 32.119
+  },
+  {
+   "text": "message",
+   "start": 32.159,
+   "end": 32.479
+  },
+  {
+   "text": "it",
+   "start": 32.52,
+   "end": 32.659
+  },
+  {
+   "text": "like",
+   "start": 32.72,
+   "end": 32.86
+  },
+  {
+   "text": "a",
+   "start": 32.92,
+   "end": 32.98
+  },
+  {
+   "text": "customer,",
+   "start": 33.02,
+   "end": 33.5
+  },
+  {
+   "text": "and",
+   "start": 33.92,
+   "end": 34.02
+  },
+  {
+   "text": "there's",
+   "start": 34.08,
+   "end": 34.32
+  },
+  {
+   "text": "the",
+   "start": 34.36,
+   "end": 34.44
+  },
+  {
+   "text": "reply",
+   "start": 34.48,
+   "end": 35.0
+  },
+  {
+   "text": "in",
+   "start": 35.06,
+   "end": 35.18
+  },
+  {
+   "text": "seconds.",
+   "start": 35.22,
+   "end": 35.66
+  },
+  {
+   "text": "Built",
+   "start": 35.86,
+   "end": 36.12
+  },
+  {
+   "text": "in",
+   "start": 36.28,
+   "end": 36.44
+  },
+  {
+   "text": "twenty-seven",
+   "start": 36.5,
+   "end": 37.02
+  },
+  {
+   "text": "minutes.",
+   "start": 37.08,
+   "end": 37.46
+  },
+  {
+   "text": "Comment",
+   "start": 37.9,
+   "end": 38.14
+  },
+  {
+   "text": "\"automate,\"",
+   "start": 38.22,
+   "end": 38.74
+  },
+  {
+   "text": "and",
+   "start": 38.92,
+   "end": 39.02
+  },
+  {
+   "text": "I'll",
+   "start": 39.08,
+   "end": 39.22
+  },
+  {
+   "text": "send",
+   "start": 39.3,
+   "end": 39.5
+  },
+  {
+   "text": "you",
+   "start": 39.56,
+   "end": 39.66
+  },
+  {
+   "text": "the",
+   "start": 39.7,
+   "end": 39.8
+  },
+  {
+   "text": "free",
+   "start": 39.82,
+   "end": 39.96
+  },
+  {
+   "text": "guide.",
+   "start": 40.06,
+   "end": 40.38
+  }
+ ]
+}
