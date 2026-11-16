@@ -41,15 +41,18 @@ const Captions: React.FC<{ words: Word[]; keywords: string[] }> = ({ words, keyw
   const kw = new Set(keywords.map(norm));
   const c = chunks.find((x) => t >= x.start - 0.05 && t <= x.end + 0.15);
   if (!c) return null;
+  const longest = Math.max(...c.words.map((w) => w.text.length), 1);
+  const total = c.words.map((w) => w.text).join(" ").length;
+  const size = Math.min(92, Math.floor(860 / (longest * 0.72)), Math.floor(1700 / (total * 0.72)));
   const pop = spring({ frame: frame - Math.round(c.start * fps), fps, config: { damping: 14, stiffness: 200 } });
   return (
-    <div style={{ position: "absolute", left: 70, right: 140, top: 1060, display: "flex", flexWrap: "wrap", justifyContent: "center", columnGap: 22,
+    <div style={{ position: "absolute", left: 70, right: 140, top: 1060, display: "flex", flexWrap: "wrap", justifyContent: "center", columnGap: 30,
       transform: `scale(${0.9 + 0.1 * pop})` }}>
       {c.words.map((w, i) => {
         const active = t >= w.start - 0.03 && t <= w.end + 0.05;
         const isKw = kw.has(norm(w.text));
         return (
-          <span key={i} style={{ fontFamily: P.font, fontWeight: 900, fontSize: 92, lineHeight: 1.1, letterSpacing: -1.5, textTransform: "uppercase",
+          <span key={i} style={{ fontFamily: P.font, fontWeight: 900, fontSize: size, lineHeight: 1.1, letterSpacing: -1.5, textTransform: "uppercase",
             color: active || isKw ? P.mint : "#ffffff", WebkitTextStroke: "3px rgba(10,16,30,0.9)", paintOrder: "stroke fill",
             textShadow: "0 6px 18px rgba(0,0,0,0.55)", transform: active ? "scale(1.08)" : "none", display: "inline-block" }}>
             {w.text.replace(/[,]$/, "")}
