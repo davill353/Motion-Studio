@@ -47,6 +47,23 @@ Then: hand over the flyer, ask for the owner's name and the best number or Insta
 - Never promise results: say "designed to save time", not "will save you X hours".
 - Stop contacting anyone who says no.
 
+## Before any cold email is queued (do this every batch)
+
+Status is checked per business, not per list. Only a **corporate subscriber** may be cold emailed:
+a company registered at Companies House and still Active. Everyone else (sole traders,
+partnerships, unincorporated businesses) needs prior consent under PECR, so they go on the DM,
+phone or walk-in list instead.
+
+1. Look the business up by name on the Companies House search, using the name plus the town.
+2. Open the company page: it must say **Active**, and the name, SIC code and address must fit the business.
+3. Exact name with a beauty/restaurant SIC counts. A same-name company in another county with an
+   unrelated SIC does not, and neither does a dissolved company.
+4. If the business publishes its company number on its own site, that is the strongest evidence.
+5. Anything you cannot confirm gets held, never guessed.
+
+First run, 16 Nov: 13 clinic emails reduced to 8, 24 restaurant emails reduced to 8. The rest went
+to the held list with the reason recorded on each record.
+
 ## Pipeline stages
 
 `to contact` → `contacted` → `replied` → `demo booked` → `pilot running` → `paying` · or `not now (follow-up date)` / `no`
