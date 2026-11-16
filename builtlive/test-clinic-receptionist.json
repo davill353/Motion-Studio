@@ -1,0 +1,17 @@
+{
+  "id": "test-clinic-receptionist",
+  "recording": "/tmp/claude-0/-home-user-Motion-Studio/48b4b902-c678-5456-9b70-8033f5193d78/scratchpad/blt/fake-recording.mp4",
+  "voice": "/tmp/claude-0/-home-user-Motion-Studio/48b4b902-c678-5456-9b70-8033f5193d78/scratchpad/blt/voice-test.m4a",
+  "deepen": false,
+  "timer_minutes": 30,
+  "finished_at": "27:36",
+  "hook": "30 minutes to build an AI receptionist",
+  "chapters": [["00:00", "Webhook"], ["05:30", "Clinic info"], ["11:00", "AI brain"], ["17:30", "Telegram"], ["22:30", "Safety"], ["27:20", "Live test"]],
+  "realtime": [["27:21", "27:37"]],
+  "zooms": [{"from": "27:20", "to": "27:44", "x": 0.5, "y": 0.6, "scale": 1.7}],
+  "blur": [{"x": 0.61, "y": 0.09, "w": 0.37, "h": 0.055, "from": "03:00", "to": "05:00"}],
+  "label": "Demo build · AI voice",
+  "end_title": "Comment AUTOMATE",
+  "end_sub": "I'll send you the free guide",
+  "keywords": ["AI", "webhook", "Telegram", "clinic", "AUTOMATE", "receptionist"]
+}

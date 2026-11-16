@@ -35,7 +35,7 @@ const chunk = (words: Word[]): Chunk[] => {
   return out;
 };
 
-const Captions: React.FC<{ words: Word[]; keywords: string[] }> = ({ words, keywords }) => {
+export const Captions: React.FC<{ words: Word[]; keywords: string[]; top?: number; maxSize?: number }> = ({ words, keywords, top = 1060, maxSize = 92 }) => {
   const frame = useCurrentFrame(); const { fps } = useVideoConfig(); const t = frame / fps;
   const chunks = React.useMemo(() => chunk(words), [words]);
   const kw = new Set(keywords.map(norm));
@@ -43,10 +43,10 @@ const Captions: React.FC<{ words: Word[]; keywords: string[] }> = ({ words, keyw
   if (!c) return null;
   const longest = Math.max(...c.words.map((w) => w.text.length), 1);
   const total = c.words.map((w) => w.text).join(" ").length;
-  const size = Math.min(92, Math.floor(860 / (longest * 0.72)), Math.floor(1700 / (total * 0.72)));
+  const size = Math.min(maxSize, Math.floor(860 / (longest * 0.72)), Math.floor(1700 / (total * 0.72)));
   const pop = spring({ frame: frame - Math.round(c.start * fps), fps, config: { damping: 14, stiffness: 200 } });
   return (
-    <div style={{ position: "absolute", left: 70, right: 140, top: 1060, display: "flex", flexWrap: "wrap", justifyContent: "center", columnGap: 30,
+    <div style={{ position: "absolute", left: 70, right: 140, top, display: "flex", flexWrap: "wrap", justifyContent: "center", columnGap: 30,
       transform: `scale(${0.9 + 0.1 * pop})` }}>
       {c.words.map((w, i) => {
         const active = t >= w.start - 0.03 && t <= w.end + 0.05;
@@ -76,15 +76,15 @@ const Hook: React.FC<{ text: string }> = ({ text }) => {
   );
 };
 
-const Bug: React.FC<{ label?: string }> = ({ label }) => (
-  <div style={{ position: "absolute", top: 200, left: 60, display: "flex", alignItems: "center", gap: 14, background: "rgba(22,35,59,0.72)", padding: "10px 18px 10px 10px", borderRadius: 999 }}>
+export const Bug: React.FC<{ label?: string; top?: number }> = ({ label, top = 200 }) => (
+  <div style={{ position: "absolute", top, left: 60, display: "flex", alignItems: "center", gap: 14, background: "rgba(22,35,59,0.72)", padding: "10px 18px 10px 10px", borderRadius: 999 }}>
     <Img src={staticFile(P.logo)} style={{ width: 52, height: 52, borderRadius: 12 }} />
     <span style={{ color: "#fff", fontFamily: P.font, fontWeight: 800, fontSize: 28 }}>The AI Pound</span>
     {label && <span style={{ color: "rgba(255,255,255,0.75)", fontFamily: P.font, fontWeight: 700, fontSize: 20, letterSpacing: 2, textTransform: "uppercase", marginLeft: 6 }}>· {label}</span>}
   </div>
 );
 
-const EndCard: React.FC<{ title: string }> = ({ title }) => {
+export const EndCard: React.FC<{ title: string; sub?: string }> = ({ title, sub = "Free guide: theaipound.co.uk" }) => {
   const frame = useCurrentFrame(); const { fps } = useVideoConfig();
   const a = interpolate(frame, [0, 8], [0, 1], { extrapolateRight: "clamp" });
   const s = spring({ frame: frame - 4, fps, config: { damping: 12 } });
@@ -92,7 +92,7 @@ const EndCard: React.FC<{ title: string }> = ({ title }) => {
     <AbsoluteFill style={{ background: P.navy, opacity: a, alignItems: "center", justifyContent: "center", fontFamily: P.font, color: "#fff", textAlign: "center", padding: "0 90px" }}>
       <Img src={staticFile(P.logo)} style={{ width: 220, height: 220, borderRadius: 48, transform: `scale(${s})` }} />
       <div style={{ fontSize: 84, fontWeight: 900, marginTop: 40, color: P.mint }}>{title}</div>
-      <div style={{ fontSize: 40, marginTop: 20, opacity: 0.85 }}>Free guide: theaipound.co.uk</div>
+      <div style={{ fontSize: 40, marginTop: 20, opacity: 0.85 }}>{sub}</div>
     </AbsoluteFill>
   );
 };
