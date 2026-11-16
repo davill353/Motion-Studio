@@ -1,0 +1,16 @@
+[
+ {
+  "name": "ai-pound brand film (9:16)",
+  "video": "renders/brand/ai-pound-brand-film-9x16.mp4",
+  "type": "brand",
+  "duration_range": [
+   15,
+   45
+  ],
+  "title": "The AI Pound: AI with an owner",
+  "captions": {
+   "caption_instagram": "We are The AI Pound. Every AI advert says faster, cheaper, fully automatic. We sell the opposite: an AI that stops and asks a human before it says anything. A clinic's phone answered, orders taken, inbox triaged, and every reply signed off by you. Two weeks free on a pilot, no card, no contract: theaipound.co.uk/pilot #TheAIPound #AIautomation #UKSmallBusiness #AIforClinics"
+  },
+  "script": "Every AI advert says the same thing. Faster. Cheaper. Fully automatic. We sell the opposite. An AI that stops and asks a human before it says anything. A clinic's phone, answered. A restaurant's orders, taken. Your inbox, triaged. Every reply signed off by you. The AI Pound. AI with an owner."
+ }
+]
