@@ -20,7 +20,7 @@ P={
    segs=["AI receptionist for clinics. Built in n8n. Here's how it actually works.",
          "The trigger takes the question and the agent reads it. The price comes from a sheet, computed in code, so the model never touches the number.",
          "Safety gates stop it on infection, pregnancy, Roaccutane and under-18s. Then an approval card. Nothing reaches a patient until their team clears it.",
-         "Two weeks free for clinics. theaipound.co.uk slash pilot."],
+         "Two weeks free for clinics. Go to The A I Pound, dot co dot uk, slash pilot."],
    cta=("Two weeks free","theaipound.co.uk/pilot"),cta_style="offer"),
  "facebook":dict(w=1080,h=1350,music=0.08,hook="Your clinic phone, answered properly",
    hook_size=60,reveal=0.70,capt_size=38,
@@ -60,7 +60,9 @@ def wrap(d,text,font,maxw):
         else: cur=t
     out.append(cur); return out
 
+ONLY=os.environ.get("ONLY","")
 for name,cfg in P.items():
+    if ONLY and name!=ONLY: continue
     durs=tts(name,cfg["segs"])
     gap=0.32; starts=[];t=0.55
     for du in durs: starts.append(t); t+=du+gap
