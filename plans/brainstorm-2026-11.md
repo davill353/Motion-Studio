@@ -3,7 +3,7 @@
 Status key: ⬜ not started · 🟡 discussing · ✅ decided · 🚀 doing
 
 ## 💷 Money
-1. ⬜ **£1 AI receptionist pilot for clinics**: 30 days for £1, then £149/month. Flyer, playbook and 765 prospects ready.
+1. 🚀 **Free 2-week AI receptionist pilot**: then £200 setup + £50/month (matches the flyer). First walk-in day: Hitchin, Tue 17 Nov.
 2. ⬜ **"Done in a day" setup**: fixed £299 to install one automation (WhatsApp FAQ bot, booking replies).
 3. ⬜ **UGC ad scripts as a service**: packs of 10 compliance-checked scripts for skincare/aesthetics brands, about £150.
 4. ⬜ **Local workshop**: "AI for small business", 2 hours, about £25 a head, Bedford or Milton Keynes.
@@ -22,4 +22,4 @@ Status key: ⬜ not started · 🟡 discussing · ✅ decided · 🚀 doing
 11. ⬜ **Portfolio site + case studies** aimed at the remote senior AI strategist role.
 
 ## Decisions log
-_(filled in as we go)_
+- 16 Nov: pilot = free for 2 weeks, then £200 setup + £50/month. First town Hitchin (35 walk-in stops: clinics, salons, 4 restaurants). Max 3 pilots at once.
