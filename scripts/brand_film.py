@@ -10,7 +10,8 @@ MINT = (0x6E, 0xE7, 0xA8)
 TXT = (0xF4, 0xF7, 0xFB)
 MUT = (0xA9, 0xB8, 0xCE)
 EDGE = (0x2C, 0x3D, 0x5C)
-MUSIC = "msclone/public/pound/audio/music.mp3"
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+MUSIC = os.path.join(ROOT, "public/pound/audio/music.mp3")
 
 # Brand film: the brand, not a product. Claims stay inside what is provable.
 CARDS = [
@@ -144,8 +145,11 @@ for i in range(NF):
     img.save(f"brandframes/f{i:04d}.png")
 
 ins = " ".join(f"-i brandvo/{i:02d}.mp3" for i in range(len(durs)))
-fl = "".join(f"[{i}:a]" for i in range(len(durs)))
-subprocess.run(f"ffmpeg -loglevel error -y {ins} -filter_complex \"{fl}amix=inputs={len(durs)}:normalize=0[vo]\" "
+# Each segment must start at its own cue. Without adelay every take plays from 0 and the
+# film ends up with several voices stacked on top of each other (shipped 16 Nov, unusable).
+fl = "".join(f"[{i}:a]adelay={int(starts[i]*1000)}|{int(starts[i]*1000)}[a{i}];" for i in range(len(durs)))
+mix = "".join(f"[a{i}]" for i in range(len(durs)))
+subprocess.run(f"ffmpeg -loglevel error -y {ins} -filter_complex \"{fl}{mix}amix=inputs={len(durs)}:normalize=0[vo]\" "
                f"-map [vo] -t {END} -ar 44100 brandvo/voice.wav", shell=True, check=True)
 subprocess.run(f"ffmpeg -loglevel error -y -stream_loop -1 -i {MUSIC} -t {END} -af "
                f"\"volume=0.10,afade=t=in:d=1.4,afade=t=out:st={max(0,END-2.6)}:d=2.6\" brandvo/music.wav",
@@ -153,8 +157,8 @@ subprocess.run(f"ffmpeg -loglevel error -y -stream_loop -1 -i {MUSIC} -t {END} -
 subprocess.run(f"ffmpeg -loglevel error -y -i brandvo/voice.wav -i brandvo/music.wav -filter_complex "
                f"\"[0][1]amix=inputs=2:normalize=0,loudnorm=I=-14:TP=-1.5:LRA=11[a]\" -map [a] brandvo/mix.wav",
                shell=True, check=True)
-os.makedirs("msclone/renders/brand", exist_ok=True)
-out = "msclone/renders/brand/ai-pound-brand-film-9x16.mp4"
+os.makedirs(os.path.join(ROOT, "renders/brand"), exist_ok=True)
+out = os.path.join(ROOT, "renders/brand/ai-pound-brand-film-9x16.mp4")
 subprocess.run(f"ffmpeg -loglevel error -y -framerate {FPS} -i brandframes/f%04d.png -i brandvo/mix.wav "
                f"-c:v libx264 -pix_fmt yuv420p -crf 19 -c:a aac -b:a 192k -shortest {out}",
                shell=True, check=True)
