@@ -102,5 +102,19 @@
    "lon": -0.2757793,
    "approx": true
   }
+ ],
+ "extra": [
+  {
+   "tag": "P",
+   "lat": 51.9483846,
+   "lon": -0.2755275,
+   "name": "Portmill Lane East Car Park, Portmill Lane, Sunnyside, Hitch"
+  },
+  {
+   "tag": "B",
+   "lat": 51.95167,
+   "lon": -0.2763431,
+   "name": "Caffe Elite, 93A Bancroft (approx point on street)"
+  }
  ]
 }
