@@ -64,18 +64,21 @@ def scan(row):
 
 
 def main():
+    import sys
+    towns = [t.strip().lower() for t in (sys.argv[1:] or ["hitchin"])]
     rows = [r for r in csv.DictReader(open(P))]
-    hit = [r for r in rows if r["town"].lower() == "hitchin"
+    hit = [r for r in rows if r["town"].strip().lower() in towns
            and r["website"] and r["website"].strip() not in ("-", "")]
     with ThreadPoolExecutor(max_workers=8) as ex:
         res = list(ex.map(scan, hit))
     keys = ["name", "priority", "url", "status", "final_url", "booking", "chat", "ai_words", "whatsapp", "messenger", "notes"]
-    with open("campaign/clinic-outreach/bot-audit-hitchin.csv", "w", newline="") as f:
+    out_path = "campaign/clinic-outreach/bot-audit-" + "-".join(towns) + ".csv"
+    with open(out_path, "w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=keys)
         w.writeheader()
         w.writerows(res)
     ok = [r for r in res if r["status"] == "ok"]
-    print(f"scanned {len(res)} sites, {len(ok)} reachable")
+    print(f"scanned {len(res)} sites, {len(ok)} reachable -> {out_path}")
     for r in res:
         flags = []
         if r["chat"]: flags.append("chat:" + r["chat"])
