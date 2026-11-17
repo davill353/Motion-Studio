@@ -44,7 +44,7 @@ If one platform fails, the others still post, and the summary tells you which on
    - `post_id`: any unique ID
    - `publish_at`: UK time, format `2026-11-10 18:30`
    - `status`: `draft` (ignored), `ready` (will post); the workflow then sets `posted`, `partly posted`, `blocked` or `declined`
-   - `video_path`: path in your GitHub repo, e.g. `renders/case-studies/CaseStudy01-Vertical.mp4`
+   - `video_path`: path in your GitHub repo, e.g. `renders/platform/receptionist-tiktok.mp4` (the file must exist at that path and carry an audio track; run `python3 scripts/audit_assets.py` first, it blocks silent and stacked-voice files)
    - `title`: YouTube title (max 100 characters)
    - `caption_youtube`, `caption_instagram`, `caption_facebook`, `caption_tiktok`
    - `tags`: YouTube tags, comma-separated
