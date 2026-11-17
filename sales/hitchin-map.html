@@ -1,0 +1,20 @@
+<!doctype html><html><head><meta charset="utf-8">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<style>html,body{margin:0;height:100%}#m{height:100%;width:100%}
+.pin{background:#16233B;color:#6EE7A8;border:3px solid #6EE7A8;border-radius:50%;width:38px;height:38px;
+display:flex;align-items:center;justify-content:center;font:700 18px Helvetica,Arial,sans-serif}
+.lbl{background:#fff;border:1px solid #16233B;border-radius:4px;padding:1px 4px;font:600 11px Helvetica,Arial;
+color:#16233B;white-space:nowrap;margin-top:2px;text-align:center}
+</style></head><body><div id="m"></div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const S=[{"n": 1, "name": "The Highlander", "addr": "45 Upper Tilehouse St, Hitchin SG5 2EF", "lat": 51.947091, "lon": -0.2846223, "note": "Closed Mon/Tue on the last check - confirm before driving"}, {"n": 2, "name": "Kite at The Red Hart", "addr": "28-29 Bucklersbury, Hitchin SG5 1BG", "lat": 51.9466922, "lon": -0.2794077, "note": ""}, {"n": 3, "name": "Mevan Restaurant & Bar", "addr": "11 Sun St, Hitchin SG5 1AE", "lat": 51.9458818, "lon": -0.2785261, "note": ""}, {"n": 4, "name": "Ibo's Bar & Restaurant", "addr": "11 High Street, Hitchin, Hertfordshire", "lat": 51.9485677, "lon": -0.278534, "note": ""}, {"n": 5, "name": "The Cock", "addr": "8 High St, Hitchin SG5 1BH", "lat": 51.9482626, "lon": -0.278697, "note": "Closed Mon/Tue on the last check - confirm before driving"}, {"n": 6, "name": "Hermitage Rd Bar and Restaurant", "addr": "20-21 Hermitage Road, Hitchin, Hertfordshire", "lat": 51.9494743, "lon": -0.2754736, "note": ""}];
+const map=L.map('m',{zoomControl:false,attributionControl:true}).setView([51.9475,-0.2800],16);
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'OSM'}).addTo(map);
+L.polyline(S.map(s=>[s.lat,s.lon]),{color:'#16233B',weight:5,opacity:.75,dashArray:'1,10',lineCap:'round'}).addTo(map);
+S.forEach(s=>{
+  const ic=L.divIcon({className:'',html:'<div class="pin">'+s.n+'</div><div class="lbl">'+s.name+'</div>',iconSize:[38,38],iconAnchor:[19,19]});
+  L.marker([s.lat,s.lon],{icon:ic}).addTo(map);
+});
+const g=L.latLngBounds(S.map(s=>[s.lat,s.lon]));map.fitBounds(g,{padding:[90,90]});
+</script></body></html>
