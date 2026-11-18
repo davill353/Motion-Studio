@@ -6,6 +6,7 @@ import { makeReel } from "./pound/Reel";
 import { poundReels } from "./pound/reels";
 import { TOTAL } from "./pound/theme";
 import { CaseStudy01 } from "./casestudy/CaseStudy";
+import { TwoSides, twoSalons, twoSidesSeconds, TwoSidesProps } from "./whichone/TwoSides";
 import { BL_END_SECONDS, BuiltLive, builtLiveDefaults, BuiltLiveProps } from "./builtlive/BuiltLive";
 import { END_SECONDS, TalkingHead, talkingDefaults, TalkingProps } from "./talking/TalkingHead";
 import { makeVoicedReel, MUSIC_ON, voiced } from "./pound/Voiced";
@@ -70,6 +71,10 @@ export const RemotionRoot: React.FC = () => {
         defaultProps={builtLiveDefaults}
         calculateMetadata={({ props }: { props: BuiltLiveProps }) => ({ durationInFrames: Math.round((props.videoSeconds + BL_END_SECONDS) * 30) })}
       />
+      <Folder name="Which-One-Are-You">
+        <Composition id="TwoSalons" component={TwoSides} fps={30} width={1080} height={1920} durationInFrames={900} defaultProps={twoSalons}
+          calculateMetadata={({ props }: { props: TwoSidesProps }) => ({ durationInFrames: Math.round(twoSidesSeconds(props) * 30) })} />
+      </Folder>
       <Folder name="Case-Studies">
         <Composition id="CaseStudy01-Vertical" component={CaseStudy01} durationInFrames={750} fps={30} width={1080} height={1920} />
         <Composition id="CaseStudy01-Square" component={CaseStudy01} durationInFrames={750} fps={30} width={1080} height={1080} />
