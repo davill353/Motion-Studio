@@ -8,3 +8,7 @@ pv/
 pvframes/
 pv-video/
 __pycache__/
+
+# Prospect contact data: keep private, never commit (public repo)
+campaign/clinic-outreach/qualified.csv
+campaign/clinic-outreach/*emails*.csv
