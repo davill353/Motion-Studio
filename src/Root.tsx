@@ -6,6 +6,7 @@ import { makeReel } from "./pound/Reel";
 import { poundReels } from "./pound/reels";
 import { TOTAL } from "./pound/theme";
 import { CaseStudy01 } from "./casestudy/CaseStudy";
+import { BOSS_SECONDS, BossLevel } from "./whichone/BossLevel";
 import { TwoSides, twoSalons, twoSidesSeconds, TwoSidesProps } from "./whichone/TwoSides";
 import { BL_END_SECONDS, BuiltLive, builtLiveDefaults, BuiltLiveProps } from "./builtlive/BuiltLive";
 import { END_SECONDS, TalkingHead, talkingDefaults, TalkingProps } from "./talking/TalkingHead";
@@ -72,6 +73,7 @@ export const RemotionRoot: React.FC = () => {
         calculateMetadata={({ props }: { props: BuiltLiveProps }) => ({ durationInFrames: Math.round((props.videoSeconds + BL_END_SECONDS) * 30) })}
       />
       <Folder name="Which-One-Are-You">
+        <Composition id="BossLevel-Salon" component={BossLevel} fps={30} width={1080} height={1920} durationInFrames={Math.round(BOSS_SECONDS * 30)} />
         <Composition id="TwoSalons" component={TwoSides} fps={30} width={1080} height={1920} durationInFrames={900} defaultProps={twoSalons}
           calculateMetadata={({ props }: { props: TwoSidesProps }) => ({ durationInFrames: Math.round(twoSidesSeconds(props) * 30) })} />
       </Folder>
