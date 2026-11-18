@@ -1,5 +1,12 @@
 # 30-day content plan: "Free AI for every clinic in Bedfordshire"
 
+> **ON HOLD from 18 November 2026.** The whole plan (plan02 to plan30) is parked in the
+> content calendar with status `hold`. It was written around walk-in days: film the door knocks,
+> film the town. The strategy is now phone calls first, and driving only to booked appointments,
+> so there is nothing to film on spec and no reason to burn a slot on a town we did not visit.
+> Videos from here are shot at real appointments, with the clinic's permission, or not at all.
+> Plan01 was built and posted; plan02 to plan30 have no files.
+
 16 November to 15 December 2026 · one video a day at **12:15** (your Shorts keep 18:30 until 20 Nov).
 
 **Rules:** real numbers only · never film or name a business without its permission · say "demo build, sample data" on demos · reply to every comment in the first hour · pin the AUTOMATE comment.
