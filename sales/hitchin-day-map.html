@@ -1,0 +1,26 @@
+<!doctype html><html><head><meta charset="utf-8">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<style>html,body{margin:0;height:100%;background:#fff}#m{height:100%}
+.pin{background:#16233B;color:#6EE7A8;border:3px solid #6EE7A8;border-radius:50%;width:40px;height:40px;
+display:flex;align-items:center;justify-content:center;font:700 19px Helvetica,Arial,sans-serif;box-shadow:0 1px 4px rgba(0,0,0,.4)}
+.lbl{background:#fff;border:1px solid #16233B;border-radius:4px;padding:1px 5px;font:600 11px Helvetica,Arial;
+color:#16233B;white-space:nowrap;margin-top:3px;text-align:center}
+.cdot{width:16px;height:16px;border-radius:50%;background:#0E7C5A;border:2px solid #fff;box-shadow:0 0 0 1px #0E7C5A}
+.clbl{font:600 10px Helvetica,Arial;color:#0E5A42;background:rgba(255,255,255,.86);padding:0 3px;border-radius:3px;white-space:nowrap}
+</style></head><body><div id="m"></div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const R=[{"n": 1, "name": "The Highlander", "lat": 51.947091, "lon": -0.2846223}, {"n": 2, "name": "Kite at The Red Hart", "lat": 51.9466922, "lon": -0.2794077}, {"n": 3, "name": "Mevan Restaurant & Bar", "lat": 51.9458818, "lon": -0.2785261}, {"n": 4, "name": "Ibo's Bar & Restaurant", "lat": 51.9485677, "lon": -0.278534}, {"n": 5, "name": "The Cock", "lat": 51.9482626, "lon": -0.278697}, {"n": 6, "name": "Hermitage Rd Bar and Restaurant", "lat": 51.9494743, "lon": -0.2754736}], C=[{"name": "Wilbury Clinic", "addr": "3 Bancroft, Hitchin SG5 1JQ", "lat": 51.9495676, "lon": -0.2773636}, {"name": "Glo The Beauty Clinic", "addr": "37 Hermitage Road, Hitchin SG5 1BY", "lat": 51.9492577, "lon": -0.2746069}, {"name": "Brow Bar & Beauty Clinic", "addr": "54 Bancroft, Hitchin SG5 1LL", "lat": 51.95167, "lon": -0.2763431}, {"name": "DewDRop Skin Aesthetics", "addr": "35 Bancroft, Hitchin SG5 1LH", "lat": 51.95167, "lon": -0.2763431}, {"name": "Sutha Aesthetics", "addr": "Churchyard Walk, Hitchin SG5 1DW", "lat": 51.9475819, "lon": -0.2773297}, {"name": "Virs Beauty", "addr": "19 Sun Street, Hitchin SG5 1AH", "lat": 51.9465035, "lon": -0.2787446}, {"name": "Aventus Clinic", "addr": "Portmill Lane, Hitchin, Hertfordshire", "lat": 51.9485176, "lon": -0.2753333, "approx": true}, {"name": "Absolute Skin", "addr": "Bridge Street, Hitchin, Hertfordshire", "lat": 51.9454106, "lon": -0.2774977, "approx": true}, {"name": "Amor\u00e9 Salon", "addr": "Bancroft, Hitchin, Hertfordshire", "lat": 51.95167, "lon": -0.2763431, "approx": true}, {"name": "Storm Aesthetics", "addr": "Hermitage Road, Hitchin, Hertfordshire", "lat": 51.9494065, "lon": -0.2757793, "approx": true}];
+const map=L.map('m',{zoomControl:false}).setView([51.9482,-0.2790],17);
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'OSM'}).addTo(map);
+C.forEach(c=>{
+  const ic=L.divIcon({className:'',html:'<div class="cdot"></div><div class="clbl">'+c.name+'</div>',iconSize:[16,16],iconAnchor:[8,8]});
+  L.marker([c.lat,c.lon],{icon:ic}).addTo(map);
+});
+L.polyline(R.map(r=>[r.lat,r.lon]),{color:'#16233B',weight:6,opacity:.85,dashArray:'2,8',lineCap:'round'}).addTo(map);
+R.forEach(r=>{
+  const ic=L.divIcon({className:'',html:'<div class="pin">'+r.n+'</div><div class="lbl">'+r.name+'</div>',iconSize:[40,40],iconAnchor:[20,20]});
+  L.marker([r.lat,r.lon],{icon:ic}).addTo(map);
+});
+map.fitBounds(L.latLngBounds(R.concat(C).map(p=>[p.lat,p.lon])),{padding:[70,70]});
+</script></body></html>

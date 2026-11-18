@@ -1,0 +1,120 @@
+{
+ "rest": [
+  {
+   "n": 1,
+   "name": "The Highlander",
+   "lat": 51.947091,
+   "lon": -0.2846223
+  },
+  {
+   "n": 2,
+   "name": "Kite at The Red Hart",
+   "lat": 51.9466922,
+   "lon": -0.2794077
+  },
+  {
+   "n": 3,
+   "name": "Mevan Restaurant & Bar",
+   "lat": 51.9458818,
+   "lon": -0.2785261
+  },
+  {
+   "n": 4,
+   "name": "Ibo's Bar & Restaurant",
+   "lat": 51.9485677,
+   "lon": -0.278534
+  },
+  {
+   "n": 5,
+   "name": "The Cock",
+   "lat": 51.9482626,
+   "lon": -0.278697
+  },
+  {
+   "n": 6,
+   "name": "Hermitage Rd Bar and Restaurant",
+   "lat": 51.9494743,
+   "lon": -0.2754736
+  }
+ ],
+ "clin": [
+  {
+   "name": "Wilbury Clinic",
+   "addr": "3 Bancroft, Hitchin SG5 1JQ",
+   "lat": 51.9495676,
+   "lon": -0.2773636
+  },
+  {
+   "name": "Glo The Beauty Clinic",
+   "addr": "37 Hermitage Road, Hitchin SG5 1BY",
+   "lat": 51.9492577,
+   "lon": -0.2746069
+  },
+  {
+   "name": "Brow Bar & Beauty Clinic",
+   "addr": "54 Bancroft, Hitchin SG5 1LL",
+   "lat": 51.95167,
+   "lon": -0.2763431
+  },
+  {
+   "name": "DewDRop Skin Aesthetics",
+   "addr": "35 Bancroft, Hitchin SG5 1LH",
+   "lat": 51.95167,
+   "lon": -0.2763431
+  },
+  {
+   "name": "Sutha Aesthetics",
+   "addr": "Churchyard Walk, Hitchin SG5 1DW",
+   "lat": 51.9475819,
+   "lon": -0.2773297
+  },
+  {
+   "name": "Virs Beauty",
+   "addr": "19 Sun Street, Hitchin SG5 1AH",
+   "lat": 51.9465035,
+   "lon": -0.2787446
+  },
+  {
+   "name": "Aventus Clinic",
+   "addr": "Portmill Lane, Hitchin, Hertfordshire",
+   "lat": 51.9485176,
+   "lon": -0.2753333,
+   "approx": true
+  },
+  {
+   "name": "Absolute Skin",
+   "addr": "Bridge Street, Hitchin, Hertfordshire",
+   "lat": 51.9454106,
+   "lon": -0.2774977,
+   "approx": true
+  },
+  {
+   "name": "Amor\u00e9 Salon",
+   "addr": "Bancroft, Hitchin, Hertfordshire",
+   "lat": 51.95167,
+   "lon": -0.2763431,
+   "approx": true
+  },
+  {
+   "name": "Storm Aesthetics",
+   "addr": "Hermitage Road, Hitchin, Hertfordshire",
+   "lat": 51.9494065,
+   "lon": -0.2757793,
+   "approx": true
+  }
+ ],
+ "extra": [
+  {
+   "tag": "P",
+   "lat": 51.9483846,
+   "lon": -0.2755275,
+   "name": "Portmill Lane East Car Park, Portmill Lane, Sunnyside, Hitch"
+  },
+  {
+   "tag": "B",
+   "lat": 51.95167,
+   "lon": -0.2763431,
+   "name": "Caffe Elite, 93A Bancroft (approx point on street)"
+  }
+ ]
+}

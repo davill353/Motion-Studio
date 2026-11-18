@@ -130,6 +130,65 @@ def commit_info(path):
     return {"path": rel, "tracked": tracked, "in_head": in_head, "sha": sha[:7], "pushed": pushed}
 
 
+def _env(path, sr=16000, hop=0.01):
+    """Speech envelope at 10ms resolution, for aligning takes against the final mix."""
+    import numpy as np, wave, tempfile, os
+    f = tempfile.mktemp(suffix=".wav")
+    sh(["ffmpeg", "-v", "error", "-y", "-i", str(path), "-ac", "1", "-ar", str(sr), f])
+    w = wave.open(f)
+    a = np.frombuffer(w.readframes(w.getnframes()), dtype=np.int16).astype(np.float32) / 32768
+    w.close(); os.remove(f)
+    n = int(sr * hop)
+    m = len(a) // n
+    e = a[:m * n].reshape(m, n)
+    env = np.sqrt((e ** 2).mean(axis=1))
+    return env - env.mean()
+
+
+def check_voices(video, vo_dir):
+    """Prove each voice take sits at its own cue in the mix.
+
+    The failure this catches: a builder that amixes every take without adelay, so all of
+    them start at 0 and the video carries several voices on top of each other. Reference
+    alignment is the only reliable offline test, so it needs the takes that were used.
+    """
+    import numpy as np
+    from pathlib import Path as _P
+    d = _P(vo_dir)
+    if d.is_absolute() is False:
+        d = REPO / d
+    takes = sorted(d.glob("*.mp3"))
+    if not takes:
+        return True, ["no voice takes to compare against"]
+    mix = _env(video if _P(video).is_absolute() else REPO / video)
+    found, notes = [], []
+    for t in takes:
+        env = _env(t)
+        if len(env) > len(mix):
+            return False, [f"{t.name} is longer than the mix"]
+        best, bi = -2.0, 0
+        for i in range(0, len(mix) - len(env) + 1):
+            seg, win = env, mix[i:i + len(env)]
+            den = (np.linalg.norm(seg) * np.linalg.norm(win)) or 1e-9
+            c = float(np.dot(seg, win) / den)
+            if c > best:
+                best, bi = c, i
+        found.append((t.name, bi / 100.0, best))
+    stacked = []
+    for i in range(len(found)):
+        for j in range(i + 1, len(found)):
+            if abs(found[i][1] - found[j][1]) < 0.30:
+                stacked.append(f"{found[i][0]} and {found[j][0]} both start at "
+                               f"{found[i][1]:.2f}s")
+    if stacked:
+        return False, ["voices stacked: " + "; ".join(stacked)]
+    weak = [f"{n} aligns poorly ({c:.2f})" for n, o, c in found if c < 0.30]
+    if weak:
+        notes.extend(weak)
+    notes.append("take cues: " + ", ".join(f"{n}@{o:.2f}s" for n, o, c in found))
+    return True, notes
+
+
 def canon(text):
     """Normalise OCR confusions so 'AI' read as 'Al' or 'A1' still matches."""
     t = text.lower()
@@ -184,6 +243,13 @@ def check(asset):
         blocks.append("not_committed")
     elif not ci["pushed"]:
         notes.append(f"{ci['sha']} is committed but not on origin/main yet")
+
+    # 1b. voice takes must not be stacked
+    if asset.get("vo_dir"):
+        ok, vn = check_voices(path, asset["vo_dir"])
+        if not ok:
+            blocks.append("voices_stacked")
+        notes.extend(vn)
 
     # 2. captions
     cap_keys = list(asset.get("captions", {}).keys())
