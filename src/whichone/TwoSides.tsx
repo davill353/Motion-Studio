@@ -21,6 +21,7 @@ export type TwoSidesProps = {
   aLabel: string; bLabel: string;
   aVolume: number; bVolume: number;
   music?: string; musicVolume?: number;
+  chatName?: string;
 };
 export const END_SEC = 3.5;
 export const twoSidesSeconds = (p: TwoSidesProps) => p.beats.reduce((s, b) => s + b.seconds, 0) + END_SEC;
@@ -51,7 +52,7 @@ const Sticker: React.FC<{ text: string; top: number; tone: "bad" | "good"; delay
   );
 };
 
-const ChatCard: React.FC<{ msgs: { from: "them" | "ai"; text: string }[] }> = ({ msgs }) => {
+const ChatCard: React.FC<{ msgs: { from: "them" | "ai"; text: string }[]; name: string }> = ({ msgs, name }) => {
   const frame = useCurrentFrame(); const { fps } = useVideoConfig();
   const inS = spring({ frame, fps, config: { damping: 15 } });
   let t = 6;
@@ -60,7 +61,7 @@ const ChatCard: React.FC<{ msgs: { from: "them" | "ai"; text: string }[] }> = ({
       transform: `translateX(${(1 - inS) * 560}px)`, boxShadow: "0 20px 50px rgba(0,0,0,0.5)", fontFamily: F }}>
       <div style={{ background: "#1f2c34", padding: "12px 18px", display: "flex", alignItems: "center", gap: 12 }}>
         <div style={{ width: 38, height: 38, borderRadius: 19, background: "#25d366", display: "flex", alignItems: "center", justifyContent: "center", color: P.navy, fontWeight: 900, fontSize: 18 }}>✿</div>
-        <div><div style={{ color: "#fff", fontWeight: 800, fontSize: 22 }}>Salon</div><div style={{ color: "#8aa0b6", fontSize: 16 }}>WhatsApp · replies instantly</div></div>
+        <div><div style={{ color: "#fff", fontWeight: 800, fontSize: 22 }}>{name}</div><div style={{ color: "#8aa0b6", fontSize: 16 }}>WhatsApp · replies instantly</div></div>
       </div>
       <div style={{ padding: 14, display: "flex", flexDirection: "column", gap: 10, minHeight: 200 }}>
         {msgs.map((m, i) => {
@@ -139,7 +140,7 @@ export const TwoSides: React.FC<TwoSidesProps> = (p) => {
             <Header text={i === 0 ? p.hook : b.title} clock={b.clock} big={i === 0} />
             {b.aNote && <Sticker text={b.aNote} top={A_TOP} tone="bad" />}
             {b.bNote && <Sticker text={b.bNote} top={B_TOP} tone="good" delay={20} />}
-            {b.chat && <ChatCard msgs={b.chat} />}
+            {b.chat && <ChatCard msgs={b.chat} name={p.chatName ?? "Salon"} />}
             {b.notify && <Notify text={b.notify} />}
           </Sequence>
         );
@@ -162,5 +163,21 @@ export const twoSalons: TwoSidesProps = {
       chat: [{ from: "them", text: "Hi! Any cut & blow-dry this Saturday? How much?" }, { from: "ai", text: "Hi! Yes, 2pm or 3:30pm. Cut & blow-dry is £45. Shall I hold 2pm for you?" }, { from: "them", text: "2pm please 😊" }] },
     { seconds: 6, a: 20.6, b: 12.5, title: "Front desk chaos", aNote: "⏱ Customer waiting", bNote: "😊 Full attention on her client" },
     { seconds: 6.5, a: 30.6, b: 21.0, title: "Then 9pm comes…", clock: "9:04 PM", aNote: "Still answering DMs", notify: "2 bookings to approve" },
+  ],
+};
+
+export const lunchRush: TwoSidesProps = {
+  aSrc: "whichone/lunch-rush/A.mp4", bSrc: "whichone/lunch-rush/B.mp4", music: "pound/audio/music.mp3", musicVolume: 0.18,
+  hook: "Two kitchens. Same lunch rush.", chatName: "Takeaway",
+  aLabel: "WITHOUT AI", bLabel: "WITH THE AI POUND", aVolume: 0.55, bVolume: 0.35,
+  endTitle: "Which kitchen are you?", endSub: "Comment AUTOMATE",
+  beats: [
+    { seconds: 3.5, a: 1.0, b: 1.0, title: "" },
+    { seconds: 6.5, a: 3.5, b: 4.0, title: "Orders by phone…", aNote: "Taking orders with one hand",
+      chat: [{ from: "them", text: "hiya can i get 2 chicken wraps one no onion n a large chips + 2 cokes for 6:30 pickup" },
+             { from: "ai", text: "Got it ✅ 2× chicken wrap (1 no onion), 1× large chips, 2× Coke. £21.40, collection 6:30pm. Sending to the kitchen to confirm." }] },
+    { seconds: 6, a: 10.5, b: 10.6, title: "Can you read this?", aNote: "What did they order?!", notify: "New order · £21.40 · approve?" },
+    { seconds: 6, a: 21.5, b: 20.5, title: "The customer opens the bag…", aNote: "❌ Wrong order", bNote: "✅ Exactly what they ordered" },
+    { seconds: 5.5, a: 30.5, b: 30.5, title: "And the phone rings again…", aNote: "🔥 Total chaos", bNote: "😄 Calm kitchen" },
   ],
 };
