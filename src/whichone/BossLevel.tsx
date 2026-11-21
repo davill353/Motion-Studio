@@ -2,33 +2,51 @@ import React from "react";
 import { AbsoluteFill, Audio, Img, interpolate, OffthreadVideo, Sequence, spring, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
 import { P } from "../pound/theme";
 
-// "Boss Level: Saturday": the salon owner as a video-game character, DMs as enemies, The AI Pound as the power-up.
+// "Boss Level": a business owner as a video-game character, DMs as enemies, The AI Pound as the power-up.
 const fontFace = `@font-face { font-family: 'PS2P'; src: url('${staticFile("fonts/PressStart2P.woff2")}') format('woff2'); }`;
 const PX = "'PS2P', monospace";
 const FPS = 30;
 const s = (sec: number) => Math.round(sec * FPS);
 
-const SRC = "whichone/two-salons/A.mp4";
-// video segments: [outStart, outEnd, srcStart]
-const SEGS: [number, number, number][] = [[0, 3.5, 0.5], [3.5, 10, 3.0], [10, 15, 12.0], [15, 20.5, 20.6], [20.5, 30, 30.6]];
 type Hit = { at: number; dmg: number; text: string; crit?: boolean };
-const HITS: Hit[] = [
-  { at: 4.4, dmg: 10, text: "how much is a facial?" },
-  { at: 5.6, dmg: 10, text: "u open sunday??" },
-  { at: 6.8, dmg: 10, text: "any space sat?" },
-  { at: 8.0, dmg: 10, text: "price for brows pls" },
-  { at: 9.1, dmg: 10, text: "hello???" },
-  { at: 13.3, dmg: 20, text: "CRITICAL HIT", crit: true },
-  { at: 16.4, dmg: 10, text: "📞 missed call" },
-  { at: 18.0, dmg: 10, text: "walk-in waiting" },
-  { at: 23.0, dmg: 5, text: "20 UNREAD DMs" },
-];
+export type BossConfig = {
+  src: string;
+  segs: [number, number, number][];   // video segments: [outStart, outEnd, srcStart] (output timings stay the same for every episode)
+  hits: Hit[];                        // hit times are fixed by the timeline; only the texts change
+  player: string; level: string; levelBanner: string;
+  counterLabel: string;               // e.g. "UNREAD" or "ORDERS"
+  critLabel: string;                  // e.g. "CRITICAL HIT!"
+  bossBar: string; bossBanner: string; bossSub: string;
+  autoItems: string[]; autoDone: string;
+  stats: [string, string][];
+};
+const T_HITS = [4.4, 5.6, 6.8, 8.0, 9.1, 13.3, 16.4, 18.0, 23.0];
+const mkHits = (texts: string[]): Hit[] => T_HITS.map((at, i) => ({ at, text: texts[i], dmg: i === 5 ? 20 : i === 8 ? 5 : 10, crit: i === 5 }));
+
+export const salonBoss: BossConfig = {
+  src: "whichone/two-salons/A.mp4",
+  segs: [[0, 3.5, 0.5], [3.5, 10, 3.0], [10, 15, 12.0], [15, 20.5, 20.6], [20.5, 30, 30.6]],
+  hits: mkHits(["how much is a facial?", "u open sunday??", "any space sat?", "price for brows pls", "hello???", "", "📞 missed call", "walk-in waiting", "20 UNREAD DMs"]),
+  player: "PLAYER 1: SALON OWNER", level: "LVL SAT", levelBanner: "LEVEL 1-1\nSATURDAY", counterLabel: "UNREAD", critLabel: "CRITICAL HIT!",
+  bossBar: "⚠ FINAL BOSS: 9PM DMs", bossBanner: "FINAL BOSS", bossSub: "9PM · 20 UNREAD DMs",
+  autoItems: ["how much is a facial?", "u open sunday??", "any space sat?", "price for brows pls", "hello???"], autoDone: "✓ AUTO-REPLIED",
+  stats: [["MESSAGES ANSWERED", "ALL"], ["BOOKINGS TO APPROVE", "3 ✓"], ["DMS AT 9PM", "0"], ["STRESS", "LOW"]],
+};
+export const kitchenBoss: BossConfig = {
+  src: "whichone/lunch-rush/A.mp4",
+  segs: [[0, 3.5, 0.5], [3.5, 10, 3.0], [10, 15, 10.5], [15, 20.5, 21.0], [20.5, 30, 30.3]],
+  hits: mkHits(["2 wraps no onion?", "is the kebab spicy?", "large or regular??", "📞 ring ring", "open til 10?", "", "❌ WRONG ORDER", "customer waiting", "30 ORDERS WAITING"]),
+  player: "PLAYER 1: HEAD CHEF", level: "LVL FRI", levelBanner: "LEVEL 2-1\nLUNCH RUSH", counterLabel: "ORDERS", critLabel: "SMUDGED ORDER!",
+  bossBar: "⚠ FINAL BOSS: FRIDAY RUSH", bossBanner: "FINAL BOSS", bossSub: "FRIDAY 7PM · 30 ORDERS · 1 PHONE",
+  autoItems: ["2 wraps no onion?", "is the kebab spicy?", "large or regular??", "open til 10?", "2x chips + 2 cokes"], autoDone: "✓ ORDER WRITTEN UP",
+  stats: [["ORDERS WRITTEN UP", "ALL ✓"], ["ORDERS TO APPROVE", "3 ✓"], ["PHONE ON SHOULDER", "NO"], ["STRESS", "LOW"]],
+};
 const GAMEOVER = 24.2, POWER = 25.6, REFILL = [26.4, 27.4], COMPLETE = 30, END = 34.5;
 export const BOSS_SECONDS = END;
 
-const hpAt = (t: number) => {
+const hpAt = (t: number, hits: Hit[]) => {
   if (t >= REFILL[0]) return interpolate(t, REFILL, [5, 100], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
-  return 100 - HITS.filter((h) => t >= h.at).reduce((a, h) => a + h.dmg, 0);
+  return 100 - hits.filter((h) => t >= h.at).reduce((a, h) => a + h.dmg, 0);
 };
 
 const VIDEO_TOP = 520, VIDEO_H = 608;
@@ -60,13 +78,13 @@ const Bubble: React.FC<{ hit: Hit; i: number }> = ({ hit, i }) => {
   );
 };
 
-const Damage: React.FC<{ hit: Hit }> = ({ hit }) => {
+const Damage: React.FC<{ hit: Hit; critLabel: string }> = ({ hit, critLabel }) => {
   const frame = useCurrentFrame();
   const y = interpolate(frame, [0, 24], [0, -90]);
   const o = interpolate(frame, [14, 26], [1, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
   return (
     <div style={{ position: "absolute", top: VIDEO_TOP + 220 + y, left: 0, right: 0, textAlign: "center", fontFamily: PX, opacity: o }}>
-      {hit.crit && <div style={{ fontSize: 44, color: "#ffd27a", textShadow: "4px 4px 0 #000", marginBottom: 12 }}>CRITICAL HIT!</div>}
+      {hit.crit && <div style={{ fontSize: 44, color: "#ffd27a", textShadow: "4px 4px 0 #000", marginBottom: 12 }}>{critLabel}</div>}
       <div style={{ fontSize: hit.crit ? 80 : 60, color: "#ff5d5d", textShadow: "5px 5px 0 #000" }}>-{hit.dmg} HP</div>
     </div>
   );
@@ -98,9 +116,8 @@ const Coin: React.FC = () => {
   );
 };
 
-const AutoReplies: React.FC = () => {
+const AutoReplies: React.FC<{ items: string[]; doneText: string }> = ({ items, doneText }) => {
   const frame = useCurrentFrame();
-  const items = ["how much is a facial?", "u open sunday??", "any space sat?", "price for brows pls", "hello???"];
   return (
     <div style={{ position: "absolute", top: VIDEO_TOP + 40, left: 40, right: 40, display: "flex", flexDirection: "column", gap: 14 }}>
       {items.map((t, i) => {
@@ -109,17 +126,16 @@ const AutoReplies: React.FC = () => {
         const done = frame > at + 10;
         return (
           <div key={i} style={{ alignSelf: i % 2 ? "flex-end" : "flex-start", fontFamily: PX, fontSize: 20, padding: "12px 14px", border: "4px solid #111",
-            background: done ? P.mint : "#fff", color: "#111", boxShadow: "6px 6px 0 #111" }}>{done ? "✓ AUTO-REPLIED" : `💬 ${t}`}</div>
+            background: done ? P.mint : "#fff", color: "#111", boxShadow: "6px 6px 0 #111" }}>{done ? doneText : `💬 ${t}`}</div>
         );
       })}
     </div>
   );
 };
 
-const Complete: React.FC = () => {
+const Complete: React.FC<{ stats: [string, string][] }> = ({ stats }) => {
   const frame = useCurrentFrame(); const { fps } = useVideoConfig();
   const row = (i: number) => interpolate(frame, [12 + i * 10, 18 + i * 10], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
-  const stats: [string, string][] = [["MESSAGES ANSWERED", "ALL"], ["BOOKINGS TO APPROVE", "3 ✓"], ["DMS AT 9PM", "0"], ["STRESS", "LOW"]];
   const cta = spring({ frame: frame - 60, fps, config: { damping: 10 } });
   return (
     <AbsoluteFill style={{ background: "#0a0f1e", fontFamily: PX, color: "#fff", alignItems: "center", paddingTop: 330 }}>
@@ -139,10 +155,11 @@ const Complete: React.FC = () => {
   );
 };
 
-export const BossLevel: React.FC = () => {
+export const BossLevel: React.FC<BossConfig> = (c) => {
+  const HITS = c.hits;
   const frame = useCurrentFrame();
   const t = frame / FPS;
-  const hp = hpAt(t);
+  const hp = hpAt(t, HITS);
   const lastHit = [...HITS].reverse().find((h) => t >= h.at);
   const since = lastHit ? t - lastHit.at : 99;
   const shake = since < 0.25 ? (lastHit?.crit ? 22 : 10) * Math.sin(frame * 3) : 0;
@@ -155,9 +172,9 @@ export const BossLevel: React.FC = () => {
       <style>{fontFace}</style>
       {/* game screen */}
       <div style={{ position: "absolute", top: VIDEO_TOP, left: 0, width: 1080, height: VIDEO_H, overflow: "hidden", transform: `translateX(${shake}px)`, border: "0", filter: `grayscale(${grey})` }}>
-        {SEGS.map(([a, b, src], i) => (
+        {c.segs.map(([a, b, src], i) => (
           <Sequence key={i} from={s(a)} durationInFrames={s(b) - s(a)}>
-            <OffthreadVideo src={staticFile(SRC)} startFrom={s(src)} volume={0.35} style={{ width: 1080, height: VIDEO_H, objectFit: "cover" }} />
+            <OffthreadVideo src={staticFile(c.src)} startFrom={s(src)} volume={0.35} style={{ width: 1080, height: VIDEO_H, objectFit: "cover" }} />
           </Sequence>
         ))}
         <AbsoluteFill style={{ background: "repeating-linear-gradient(0deg, rgba(0,0,0,0.18) 0px, rgba(0,0,0,0.18) 2px, transparent 2px, transparent 5px)" }} />
@@ -168,37 +185,37 @@ export const BossLevel: React.FC = () => {
 
       {/* HUD */}
       <div style={{ position: "absolute", top: 160, left: 50, right: 50, display: "flex", justifyContent: "space-between", fontFamily: PX, color: "#fff", fontSize: 22 }}>
-        <span>PLAYER 1: SALON OWNER</span><span style={{ color: "#ffd27a" }}>LVL SAT</span>
+        <span>{c.player}</span><span style={{ color: "#ffd27a" }}>{c.level}</span>
       </div>
       <div style={{ position: "absolute", top: 230, left: 50, right: 50 }}>
         <Bar value={hp} max={100} colour={hp > 50 ? P.mint : hp > 20 ? "#ffd27a" : "#ff5d5d"} label={`HP ${Math.round(hp)}/100${hp <= 20 && !powered ? "  LOW HEALTH!" : ""}`} blink={hp <= 20 && !powered} />
       </div>
       {boss && (
         <div style={{ position: "absolute", top: VIDEO_TOP + VIDEO_H + 40, left: 50, right: 50 }}>
-          <Bar value={20} max={20} colour="#b04bff" label="⚠ FINAL BOSS: 9PM DMs" blink />
+          <Bar value={20} max={20} colour="#b04bff" label={c.bossBar} blink />
         </div>
       )}
       {!boss && !powered && t > 3.5 && (
         <div style={{ position: "absolute", top: VIDEO_TOP + VIDEO_H + 40, left: 50, right: 50, fontFamily: PX, color: "#fff", fontSize: 24, lineHeight: 1.8 }}>
-          UNREAD: <span style={{ color: "#ff5d5d" }}>{HITS.filter((h) => t >= h.at && !h.crit).length * 3 + 1}</span>
+          {c.counterLabel}: <span style={{ color: "#ff5d5d" }}>{HITS.filter((h) => t >= h.at && !h.crit).length * 3 + 1}</span>
         </div>
       )}
 
       {/* events */}
-      <Sequence durationInFrames={s(3.5)}><Banner text={"LEVEL 1-1\nSATURDAY"} sub="PRESS START" colour="#ffd27a" /></Sequence>
+      <Sequence durationInFrames={s(3.5)}><Banner text={c.levelBanner} sub="PRESS START" colour="#ffd27a" /></Sequence>
       {HITS.map((h, i) => (
         <React.Fragment key={i}>
           <Sequence from={s(h.at - 0.6)} durationInFrames={s(0.8)}><Bubble hit={h} i={i} /></Sequence>
-          <Sequence from={s(h.at)} durationInFrames={s(0.9)}><Damage hit={h} /></Sequence>
+          <Sequence from={s(h.at)} durationInFrames={s(0.9)}><Damage hit={h} critLabel={c.critLabel} /></Sequence>
           <Sequence from={s(h.at)} durationInFrames={s(0.5)}><Audio src={staticFile(h.crit ? "whichone/sfx/crit.wav" : "whichone/sfx/hit.wav")} volume={0.55} /></Sequence>
         </React.Fragment>
       ))}
-      <Sequence from={s(20.5)} durationInFrames={s(1.6)}><Banner text="FINAL BOSS" sub="9PM · 20 UNREAD DMs" colour="#b04bff" blink /></Sequence>
+      <Sequence from={s(20.5)} durationInFrames={s(1.6)}><Banner text={c.bossBanner} sub={c.bossSub} colour="#b04bff" blink /></Sequence>
       <Sequence from={s(GAMEOVER)} durationInFrames={s(POWER - GAMEOVER)}><Banner text="GAME OVER?" colour="#ff5d5d" /></Sequence>
       <Sequence from={s(POWER)} durationInFrames={s(1.8)}><Coin /></Sequence>
       <Sequence from={s(POWER + 1.0)} durationInFrames={s(1.4)}><Banner text="POWER-UP!" sub="THE AI POUND" colour={P.mint} /></Sequence>
-      <Sequence from={s(28.0)} durationInFrames={s(COMPLETE - 28.0)}><AutoReplies /></Sequence>
-      <Sequence from={s(COMPLETE)}><Complete /></Sequence>
+      <Sequence from={s(28.0)} durationInFrames={s(COMPLETE - 28.0)}><AutoReplies items={c.autoItems} doneText={c.autoDone} /></Sequence>
+      <Sequence from={s(COMPLETE)}><Complete stats={c.stats} /></Sequence>
 
       {/* sound */}
       <Sequence from={0} durationInFrames={s(0.6)}><Audio src={staticFile("whichone/sfx/start.wav")} volume={0.5} /></Sequence>

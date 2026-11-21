@@ -7,7 +7,7 @@ import { poundReels } from "./pound/reels";
 import { TOTAL } from "./pound/theme";
 import { CaseStudy01 } from "./casestudy/CaseStudy";
 import { DMS_SECONDS, TheDMs } from "./whichone/TheDMs";
-import { BOSS_SECONDS, BossLevel } from "./whichone/BossLevel";
+import { BOSS_SECONDS, BossLevel, kitchenBoss, salonBoss } from "./whichone/BossLevel";
 import { lunchRush, TwoSides, twoSalons, twoSidesSeconds, TwoSidesProps } from "./whichone/TwoSides";
 import { BL_END_SECONDS, BuiltLive, builtLiveDefaults, BuiltLiveProps } from "./builtlive/BuiltLive";
 import { END_SECONDS, TalkingHead, talkingDefaults, TalkingProps } from "./talking/TalkingHead";
@@ -75,7 +75,8 @@ export const RemotionRoot: React.FC = () => {
       />
       <Folder name="Which-One-Are-You">
         <Composition id="TheDMs-Trailer" component={TheDMs} fps={30} width={1080} height={1920} durationInFrames={Math.round(DMS_SECONDS * 30)} />
-        <Composition id="BossLevel-Salon" component={BossLevel} fps={30} width={1080} height={1920} durationInFrames={Math.round(BOSS_SECONDS * 30)} />
+        <Composition id="BossLevel-Salon" component={BossLevel} fps={30} width={1080} height={1920} durationInFrames={Math.round(BOSS_SECONDS * 30)} defaultProps={salonBoss} />
+        <Composition id="BossLevel-Kitchen" component={BossLevel} fps={30} width={1080} height={1920} durationInFrames={Math.round(BOSS_SECONDS * 30)} defaultProps={kitchenBoss} />
         <Composition id="LunchRush" component={TwoSides} fps={30} width={1080} height={1920} durationInFrames={900} defaultProps={lunchRush}
           calculateMetadata={({ props }: { props: TwoSidesProps }) => ({ durationInFrames: Math.round(twoSidesSeconds(props) * 30) })} />
         <Composition id="TwoSalons" component={TwoSides} fps={30} width={1080} height={1920} durationInFrames={900} defaultProps={twoSalons}
