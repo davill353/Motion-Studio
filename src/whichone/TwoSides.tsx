@@ -160,7 +160,7 @@ export const twoSalons: TwoSidesProps = {
     { seconds: 3.5, a: 0.5, b: 6.0, title: "" },
     { seconds: 6, a: 4.0, b: 0.0, title: "The messages keep coming…", aNote: "📱 4 unread messages", bNote: "✅ Replied in seconds" },
     { seconds: 6.5, a: 10.4, b: 8.0, title: "Stop mid-blow-dry to answer?", aNote: "Client left waiting",
-      chat: [{ from: "them", text: "Hi! Any cut & blow-dry this Saturday? How much?" }, { from: "ai", text: "Hi! Yes, 2pm or 3:30pm. Cut & blow-dry is £45. Shall I hold 2pm for you?" }, { from: "them", text: "2pm please 😊" }] },
+      chat: [{ from: "them", text: "Hi! Any cut & blow-dry this Saturday? How much?" }, { from: "ai", text: "Hi! Yes, 2pm or 3:30pm. I will send our price list over. Shall I hold 2pm for you?" }, { from: "them", text: "2pm please 😊" }] },
     { seconds: 6, a: 20.6, b: 12.5, title: "Front desk chaos", aNote: "⏱ Customer waiting", bNote: "😊 Full attention on her client" },
     { seconds: 6.5, a: 30.6, b: 21.0, title: "Then 9pm comes…", clock: "9:04 PM", aNote: "Still answering DMs", notify: "2 bookings to approve" },
   ],
