@@ -44,6 +44,16 @@ export const kitchenBoss: BossConfig = {
 const GAMEOVER = 24.2, POWER = 25.6, REFILL = [26.4, 27.4], COMPLETE = 30, END = 34.5;
 export const BOSS_SECONDS = END;
 
+export const builderBoss: BossConfig = {
+  src: "whichone/builder/A.mp4",
+  segs: [[0, 3.5, 0.5], [3.5, 10, 3.0], [10, 15, 13.0], [15, 20.5, 20.5], [20.5, 30, 30.3]],
+  hits: mkHits(["need a quote 4 extension", "📞 ring ring", "can u do sat?", "how much roughly?", "hello??", "", "📞 voicemail", "they chose someone else", "12 QUOTES TO WRITE"]),
+  player: "PLAYER 1: SITE BOSS", level: "LVL MON", levelBanner: "LEVEL 3-1\nMONDAY ON SITE", counterLabel: "MISSED CALLS", critLabel: "MISSED CALL!",
+  bossBar: "⚠ FINAL BOSS: 10PM PAPERWORK", bossBanner: "FINAL BOSS", bossSub: "10PM · 12 QUOTES · COLD TEA",
+  autoItems: ["need a quote 4 extension", "can u do sat?", "how much roughly?", "kitchen refit SG19", "loft conversion?"], autoDone: "✓ DETAILS + PHOTOS IN",
+  stats: [["CALLS ANSWERED", "ALL ✓"], ["SITE VISITS TO APPROVE", "3 ✓"], ["QUOTES AT 10PM", "0"], ["STRESS", "LOW"]],
+};
+
 const hpAt = (t: number, hits: Hit[]) => {
   if (t >= REFILL[0]) return interpolate(t, REFILL, [5, 100], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
   return 100 - hits.filter((h) => t >= h.at).reduce((a, h) => a + h.dmg, 0);
