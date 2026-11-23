@@ -181,3 +181,20 @@ export const lunchRush: TwoSidesProps = {
     { seconds: 5.5, a: 30.5, b: 30.5, title: "And the phone rings again…", aNote: "🔥 Total chaos", bNote: "😄 Calm kitchen" },
   ],
 };
+
+export const twoBuilders: TwoSidesProps = {
+  aSrc: "whichone/builder/A.mp4", bSrc: "whichone/builder/B.mp4", music: "pound/audio/music.mp3", musicVolume: 0.18,
+  hook: "Two builders. Same Monday.", chatName: "Builder",
+  aLabel: "WITHOUT AI", bLabel: "WITH THE AI POUND", aVolume: 0.5, bVolume: 0.35,
+  endTitle: "Which builder are you?", endSub: "Comment AUTOMATE",
+  beats: [
+    { seconds: 3.5, a: 0.5, b: 0.5, title: "" },
+    { seconds: 6.5, a: 3.0, b: 3.0, title: "The phone rings mid-job…", aNote: "Can't answer up a ladder", bNote: "✅ Answered for her" },
+    { seconds: 6, a: 13.0, b: 10.5, title: "Missed call = missed job", aNote: "📞 Missed call",
+      chat: [{ from: "them", text: "Hi, I need a quote for a kitchen extension in SG19. Are you free this week?" },
+             { from: "ai", text: "Thanks! Could you send 2–3 photos and roughly how big it is? Site visits are free on Thu 4pm or Sat 10am." },
+             { from: "them", text: "Thu 4pm works 👍" }] },
+    { seconds: 6, a: 20.5, b: 20.5, title: "Calling back…", aNote: "They chose someone else", bNote: "🏡 Site visit booked" },
+    { seconds: 6.5, a: 30.5, b: 30.5, title: "Then 10pm comes…", clock: "10:12 PM", aNote: "Writing quotes by hand", notify: "3 new jobs, details ready · approve visits?" },
+  ],
+};
