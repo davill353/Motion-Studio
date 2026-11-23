@@ -12,3 +12,11 @@ __pycache__/
 # Prospect contact data: keep private, never commit (public repo)
 campaign/clinic-outreach/qualified.csv
 campaign/clinic-outreach/*emails*.csv
+
+# Private: prospect pipeline, call lists, audit data and printed walk packs.
+# These must never be public (PECR/GDPR). Keep them in the private working copy.
+campaign/clinic-outreach/*.csv
+campaign/clinic-outreach/*.pdf
+campaign/clinic-outreach/*.json
+campaign/clinic-outreach/*.html
+campaign/clinic-outreach/*.png
