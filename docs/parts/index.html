@@ -94,7 +94,7 @@ function confidence(best, second, coverage){
   let c = 0.28*Math.min(best/6,1) + 0.30*Math.min(coverage,1) + 0.28*Math.min(Math.max(gap,0)*1.6,1) + 0.14*Math.min(best/9,1);
   return Math.max(0, Math.min(1, c));
 }
-function money(v){ return v==null||v===""? "": "£"+Number(v).toFixed(2); }
+function money(v){ const n=Number(v); return (!v&&v!==0)||!isFinite(n)||n<=0? "check price": "£"+n.toFixed(2); }
 
 const state = {queue: JSON.parse(localStorage.getItem("bsp_queue")||"[]")};
 
@@ -146,7 +146,7 @@ function search(){
         <img src="${x.p.i}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">
         <div class="body">
           <div class="name">${x.p.n}<span class="badge ${cls}">${Math.round(c*100)}%</span></div>
-          <div class="meta">SKU ${x.p.s||"-"} &middot; <a href="${x.p.u}" target="_blank" rel="noopener">view on site</a></div>
+          <div class="meta">${x.p.s? "SKU "+x.p.s+" &middot; ":""}<a href="${x.p.u}" target="_blank" rel="noopener">view on site</a></div>
         </div>
         <div class="price">${money(x.p.p)}</div>
       </div>`;
