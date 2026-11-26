@@ -54,6 +54,16 @@ export const builderBoss: BossConfig = {
   stats: [["CALLS ANSWERED", "ALL ✓"], ["SITE VISITS TO APPROVE", "3 ✓"], ["QUOTES AT 10PM", "0"], ["STRESS", "LOW"]],
 };
 
+export const gymBoss: BossConfig = {
+  src: "whichone/gym/A.mp4",
+  segs: [[0, 3.5, 0.5], [3.5, 10, 3.0], [10, 15, 11.0], [15, 20.5, 20.5], [20.5, 30, 30.3]],
+  hits: mkHits(["how much is membership?", "do u do PT?", "is the 6pm class full?", "📞 ring ring", "free trial??", "", "queue at reception", "📞 missed call", "40 UNREAD DMs"]),
+  player: "PLAYER 1: PERSONAL TRAINER", level: "LVL 6PM", levelBanner: "LEVEL 4-1\nPEAK HOUR", counterLabel: "UNREAD", critLabel: "CLIENT LEFT WAITING!",
+  bossBar: "⚠ FINAL BOSS: 11PM DMs", bossBanner: "FINAL BOSS", bossSub: "11PM · 40 UNREAD · NO SLEEP",
+  autoItems: ["how much is membership?", "do u do PT?", "is the 6pm class full?", "free trial??", "open bank holiday?"], autoDone: "✓ AUTO-REPLIED",
+  stats: [["MEMBERSHIP QUESTIONS", "ANSWERED ✓"], ["TRIALS TO APPROVE", "3 ✓"], ["DMS AT 11PM", "0"], ["STRESS", "LOW"]],
+};
+
 const hpAt = (t: number, hits: Hit[]) => {
   if (t >= REFILL[0]) return interpolate(t, REFILL, [5, 100], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
   return 100 - hits.filter((h) => t >= h.at).reduce((a, h) => a + h.dmg, 0);

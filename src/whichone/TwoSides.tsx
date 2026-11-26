@@ -198,3 +198,20 @@ export const twoBuilders: TwoSidesProps = {
     { seconds: 6.5, a: 30.5, b: 30.5, title: "Then 10pm comes…", clock: "10:12 PM", aNote: "Writing quotes by hand", notify: "3 new jobs, details ready · approve visits?" },
   ],
 };
+
+export const twoGyms: TwoSidesProps = {
+  aSrc: "whichone/gym/A.mp4", bSrc: "whichone/gym/B.mp4", music: "pound/audio/music.mp3", musicVolume: 0.18,
+  hook: "Two gyms. Same 6pm rush.", chatName: "Gym",
+  aLabel: "WITHOUT AI", bLabel: "WITH THE AI POUND", aVolume: 0.5, bVolume: 0.35,
+  endTitle: "Which gym are you?", endSub: "Comment AUTOMATE",
+  beats: [
+    { seconds: 3.5, a: 0.5, b: 0.3, title: "" },
+    { seconds: 6.5, a: 3.0, b: 3.6, title: "The messages keep coming…", aNote: "Phone buzzing mid-set", bNote: "✅ Replied for her" },
+    { seconds: 6, a: 11.0, b: 10.3, title: "Stop the session to reply?", aNote: "Client left waiting",
+      chat: [{ from: "them", text: "Hi! Do you do a free trial? Thinking of joining 💪" },
+             { from: "ai", text: "Hi! Yes, your first session is a free trial. Would Tuesday 6pm or Thursday 7am suit? I'll pass it to the team to confirm." },
+             { from: "them", text: "Tuesday 6pm please!" }] },
+    { seconds: 6, a: 20.5, b: 20.3, title: "Reception rush", aNote: "⏱ Queue at reception", bNote: "🤝 New member welcomed" },
+    { seconds: 6.5, a: 30.5, b: 0.8, title: "By the end of the day…", aNote: "40 unread DMs", notify: "3 free trials booked · approve?" },
+  ],
+};

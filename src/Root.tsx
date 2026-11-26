@@ -7,8 +7,8 @@ import { poundReels } from "./pound/reels";
 import { TOTAL } from "./pound/theme";
 import { CaseStudy01 } from "./casestudy/CaseStudy";
 import { DMS_SECONDS, TheDMs } from "./whichone/TheDMs";
-import { BOSS_SECONDS, BossLevel, builderBoss, kitchenBoss, salonBoss } from "./whichone/BossLevel";
-import { lunchRush, twoBuilders, TwoSides, twoSalons, twoSidesSeconds, TwoSidesProps } from "./whichone/TwoSides";
+import { BOSS_SECONDS, BossLevel, builderBoss, gymBoss, kitchenBoss, salonBoss } from "./whichone/BossLevel";
+import { lunchRush, twoBuilders, twoGyms, TwoSides, twoSalons, twoSidesSeconds, TwoSidesProps } from "./whichone/TwoSides";
 import { BL_END_SECONDS, BuiltLive, builtLiveDefaults, BuiltLiveProps } from "./builtlive/BuiltLive";
 import { END_SECONDS, TalkingHead, talkingDefaults, TalkingProps } from "./talking/TalkingHead";
 import { makeVoicedReel, MUSIC_ON, voiced } from "./pound/Voiced";
@@ -78,9 +78,12 @@ export const RemotionRoot: React.FC = () => {
         <Composition id="BossLevel-Salon" component={BossLevel} fps={30} width={1080} height={1920} durationInFrames={Math.round(BOSS_SECONDS * 30)} defaultProps={salonBoss} />
         <Composition id="BossLevel-Kitchen" component={BossLevel} fps={30} width={1080} height={1920} durationInFrames={Math.round(BOSS_SECONDS * 30)} defaultProps={kitchenBoss} />
         <Composition id="BossLevel-Builder" component={BossLevel} fps={30} width={1080} height={1920} durationInFrames={Math.round(BOSS_SECONDS * 30)} defaultProps={builderBoss} />
+        <Composition id="BossLevel-Gym" component={BossLevel} fps={30} width={1080} height={1920} durationInFrames={Math.round(BOSS_SECONDS * 30)} defaultProps={gymBoss} />
         <Composition id="LunchRush" component={TwoSides} fps={30} width={1080} height={1920} durationInFrames={900} defaultProps={lunchRush}
           calculateMetadata={({ props }: { props: TwoSidesProps }) => ({ durationInFrames: Math.round(twoSidesSeconds(props) * 30) })} />
         <Composition id="TwoBuilders" component={TwoSides} fps={30} width={1080} height={1920} durationInFrames={900} defaultProps={twoBuilders}
+          calculateMetadata={({ props }: { props: TwoSidesProps }) => ({ durationInFrames: Math.round(twoSidesSeconds(props) * 30) })} />
+        <Composition id="TwoGyms" component={TwoSides} fps={30} width={1080} height={1920} durationInFrames={900} defaultProps={twoGyms}
           calculateMetadata={({ props }: { props: TwoSidesProps }) => ({ durationInFrames: Math.round(twoSidesSeconds(props) * 30) })} />
         <Composition id="TwoSalons" component={TwoSides} fps={30} width={1080} height={1920} durationInFrames={900} defaultProps={twoSalons}
           calculateMetadata={({ props }: { props: TwoSidesProps }) => ({ durationInFrames: Math.round(twoSidesSeconds(props) * 30) })} />
