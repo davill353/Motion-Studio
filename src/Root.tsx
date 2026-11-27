@@ -6,6 +6,7 @@ import { makeReel } from "./pound/Reel";
 import { poundReels } from "./pound/reels";
 import { TOTAL } from "./pound/theme";
 import { CaseStudy01 } from "./casestudy/CaseStudy";
+import { ORDERBOOK_SECONDS, OrderBook } from "./whichone/OrderBook";
 import { MISSION_SECONDS, MissionLunchRush } from "./whichone/MissionLunchRush";
 import { DMS_SECONDS, TheDMs } from "./whichone/TheDMs";
 import { BOSS_SECONDS, BossLevel, builderBoss, gymBoss, kitchenBoss, salonBoss } from "./whichone/BossLevel";
@@ -75,6 +76,7 @@ export const RemotionRoot: React.FC = () => {
         calculateMetadata={({ props }: { props: BuiltLiveProps }) => ({ durationInFrames: Math.round((props.videoSeconds + BL_END_SECONDS) * 30) })}
       />
       <Folder name="Which-One-Are-You">
+        <Composition id="OrderBook-Romance" component={OrderBook} fps={30} width={1080} height={1920} durationInFrames={Math.round(ORDERBOOK_SECONDS * 30)} />
         <Composition id="Mission-LunchRush" component={MissionLunchRush} fps={30} width={1080} height={1920} durationInFrames={Math.round(MISSION_SECONDS * 30)} />
         <Composition id="TheDMs-Trailer" component={TheDMs} fps={30} width={1080} height={1920} durationInFrames={Math.round(DMS_SECONDS * 30)} />
         <Composition id="BossLevel-Salon" component={BossLevel} fps={30} width={1080} height={1920} durationInFrames={Math.round(BOSS_SECONDS * 30)} defaultProps={salonBoss} />
