@@ -6,6 +6,7 @@ import { makeReel } from "./pound/Reel";
 import { poundReels } from "./pound/reels";
 import { TOTAL } from "./pound/theme";
 import { CaseStudy01 } from "./casestudy/CaseStudy";
+import { Speedrun, SPEEDRUN_SECONDS } from "./whichone/Speedrun";
 import { FIGHTER_SECONDS, MessageFighter } from "./whichone/MessageFighter";
 import { POV_SECONDS, PhonePOV } from "./whichone/PhonePOV";
 import { LATENIGHT_SECONDS, LateNightTexts } from "./whichone/LateNightTexts";
@@ -83,6 +84,7 @@ export const RemotionRoot: React.FC = () => {
         calculateMetadata={({ props }: { props: BuiltLiveProps }) => ({ durationInFrames: Math.round((props.videoSeconds + BL_END_SECONDS) * 30) })}
       />
       <Folder name="Which-One-Are-You">
+        <Composition id="Speedrun-InboxZero" component={Speedrun} fps={30} width={1080} height={1920} durationInFrames={Math.round(SPEEDRUN_SECONDS * 30)} />
         <Composition id="Message-Fighter" component={MessageFighter} fps={30} width={1080} height={1920} durationInFrames={Math.round(FIGHTER_SECONDS * 30)} />
         <Composition id="Phone-POV" component={PhonePOV} fps={30} width={1080} height={1920} durationInFrames={Math.round(POV_SECONDS * 30)} />
         <Composition id="LateNight-Texts" component={LateNightTexts} fps={30} width={1080} height={1920} durationInFrames={Math.round(LATENIGHT_SECONDS * 30)} />
