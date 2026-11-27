@@ -6,6 +6,7 @@ import { makeReel } from "./pound/Reel";
 import { poundReels } from "./pound/reels";
 import { TOTAL } from "./pound/theme";
 import { CaseStudy01 } from "./casestudy/CaseStudy";
+import { SEVENDAYS_SECONDS, SevenDaysAd } from "./whichone/SevenDaysAd";
 import { InboxUnwrapped, UNWRAPPED_SECONDS } from "./whichone/InboxUnwrapped";
 import { DIARY_SECONDS, DiaryDrop } from "./whichone/DiaryDrop";
 import { Speedrun, SPEEDRUN_SECONDS } from "./whichone/Speedrun";
@@ -86,6 +87,7 @@ export const RemotionRoot: React.FC = () => {
         calculateMetadata={({ props }: { props: BuiltLiveProps }) => ({ durationInFrames: Math.round((props.videoSeconds + BL_END_SECONDS) * 30) })}
       />
       <Folder name="Which-One-Are-You">
+        <Composition id="Ad-SevenDays" component={SevenDaysAd} fps={30} width={1080} height={1920} durationInFrames={Math.round(SEVENDAYS_SECONDS * 30)} />
         <Composition id="Inbox-Unwrapped" component={InboxUnwrapped} fps={30} width={1080} height={1920} durationInFrames={Math.round(UNWRAPPED_SECONDS * 30)} />
         <Composition id="Diary-Drop" component={DiaryDrop} fps={30} width={1080} height={1920} durationInFrames={Math.round(DIARY_SECONDS * 30)} />
         <Composition id="Speedrun-InboxZero" component={Speedrun} fps={30} width={1080} height={1920} durationInFrames={Math.round(SPEEDRUN_SECONDS * 30)} />
