@@ -6,6 +6,7 @@ import { makeReel } from "./pound/Reel";
 import { poundReels } from "./pound/reels";
 import { TOTAL } from "./pound/theme";
 import { CaseStudy01 } from "./casestudy/CaseStudy";
+import { EPIC_SECONDS, TheBuilderEpic } from "./whichone/TheBuilderEpic";
 import { INBOXZERO_SECONDS, InboxZero } from "./whichone/InboxZero";
 import { ORDERBOOK_SECONDS, OrderBook } from "./whichone/OrderBook";
 import { MISSION_SECONDS, MissionLunchRush } from "./whichone/MissionLunchRush";
@@ -77,6 +78,7 @@ export const RemotionRoot: React.FC = () => {
         calculateMetadata={({ props }: { props: BuiltLiveProps }) => ({ durationInFrames: Math.round((props.videoSeconds + BL_END_SECONDS) * 30) })}
       />
       <Folder name="Which-One-Are-You">
+        <Composition id="TheBuilder-Epic" component={TheBuilderEpic} fps={30} width={1080} height={1920} durationInFrames={Math.round(EPIC_SECONDS * 30)} />
         <Composition id="InboxZero-Nature" component={InboxZero} fps={30} width={1080} height={1920} durationInFrames={Math.round(INBOXZERO_SECONDS * 30)} />
         <Composition id="OrderBook-Romance" component={OrderBook} fps={30} width={1080} height={1920} durationInFrames={Math.round(ORDERBOOK_SECONDS * 30)} />
         <Composition id="Mission-LunchRush" component={MissionLunchRush} fps={30} width={1080} height={1920} durationInFrames={Math.round(MISSION_SECONDS * 30)} />
