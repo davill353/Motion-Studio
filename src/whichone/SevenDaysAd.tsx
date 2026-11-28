@@ -9,7 +9,7 @@ const SERIF = "'PlayfairR', Georgia, serif";
 const fontFace = `@font-face { font-family: 'PlayfairR'; font-weight: 400; src: url('${staticFile("fonts/Playfair400.woff2")}') format('woff2'); }
 @font-face { font-family: 'PlayfairR'; font-weight: 600; src: url('${staticFile("fonts/Playfair600.woff2")}') format('woff2'); }`;
 const MINT = P.mint, GREY = "rgba(255,255,255,0.62)";
-export const SEVENDAYS_SECONDS = 39.5;
+export const SEVENDAYS_SECONDS = 37.3;
 
 const Rise: React.FC<{ delay?: number; children: React.ReactNode; style?: React.CSSProperties }> = ({ delay = 0, children, style }) => {
   const frame = useCurrentFrame();
@@ -111,11 +111,11 @@ const S5: React.FC = () => (
 );
 
 const S6: React.FC = () => (
-  <Centre top={620}>
-    <Rise><Serif size={96}>I'm David.</Serif></Rise>
-    <Rise delay={14}><Serif size={96}>I'm <G>local.</G></Serif></Rise>
-    <Rise delay={s(1.7)}><Sub size={42}>And I only take <span style={{ color: "#fff" }}>a few businesses</span> at a time.</Sub></Rise>
-    <Rise delay={s(2.6)}><div style={{ marginTop: 26, fontFamily: P.font, fontSize: 30, color: GREY, letterSpacing: 3 }}>BEDFORDSHIRE · HERTFORDSHIRE</div></Rise>
+  <Centre top={640}>
+    <Rise><Serif size={84}>I only take</Serif></Rise>
+    <Rise delay={8}><Serif size={84}><G>a few businesses</G></Serif></Rise>
+    <Rise delay={16}><Serif size={84}>at a time.</Serif></Rise>
+    <Rise delay={s(1.6)}><div style={{ marginTop: 30, fontFamily: P.font, fontSize: 30, color: GREY, letterSpacing: 3 }}>BEDFORDSHIRE · HERTFORDSHIRE</div></Rise>
   </Centre>
 );
 
@@ -135,7 +135,7 @@ const S7: React.FC = () => {
   );
 };
 
-const SCENES: [number, number, React.FC][] = [[0, 6.9, S1], [6.9, 12.8, S2], [12.8, 18.0, S3], [18.0, 21.2, S4], [21.2, 27.0, S5], [27.0, 32.2, S6], [32.2, 39.5, S7]];
+const SCENES: [number, number, React.FC][] = [[0, 6.9, S1], [6.9, 12.8, S2], [12.8, 18.0, S3], [18.0, 21.2, S4], [21.2, 27.0, S5], [27.0, 30.0, S6], [30.0, 37.3, S7]];
 
 export const SevenDaysAd: React.FC = () => {
   const frame = useCurrentFrame();
@@ -148,8 +148,8 @@ export const SevenDaysAd: React.FC = () => {
           <AbsoluteFill style={{ opacity: interpolate(frame - s(a), [s(b - a) - 8, s(b - a)], [1, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" }) }}><C /></AbsoluteFill>
         </Sequence>
       ))}
-      <Sequence durationInFrames={s(39.5)}><Audio src={staticFile("whichone/retro/bed2026.wav")} loop volume={(f) => 0.22 * Math.min(1, f / 30) * Math.min(1, (s(39.5) - f) / 40)} /></Sequence>
-      {[["k1", 0.4], ["k2", 2.1], ["k3", 7.1], ["k4", 13.0], ["k5", 18.2], ["k6", 21.4], ["k7", 27.2], ["k8", 32.4]].map(([k, at]) => (
+      <Sequence durationInFrames={s(SEVENDAYS_SECONDS)}><Audio src={staticFile("whichone/retro/bed2026.wav")} loop volume={(f) => 0.22 * Math.min(1, f / 30) * Math.min(1, (s(SEVENDAYS_SECONDS) - f) / 40)} /></Sequence>
+      {[["k1", 0.4], ["k2", 2.1], ["k3", 7.1], ["k4", 13.0], ["k5", 18.2], ["k6", 21.4], ["k7", 27.2], ["k8", 30.2]].map(([k, at]) => (
         <Sequence key={k as string} from={s(at as number)} durationInFrames={s(6)}><Audio src={K(`${k}.wav`)} /></Sequence>
       ))}
     </AbsoluteFill>
